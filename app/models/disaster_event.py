@@ -1,6 +1,6 @@
 from sqlmodel import Field, SQLModel
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 class DisasterEvent(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -8,7 +8,7 @@ class DisasterEvent(SQLModel, table=True):
     country: str = Field(index=True)
     region: Optional[str] = Field(default=None, index=True)
     category: str = Field(index=True)
-    event_date: str = Field(index=True)
+    event_date: date = Field(index=True)
     severity: str = Field(default="Moderate", index=True)
     short_summary: str
     latitude: Optional[float] = None
