@@ -1,0 +1,234 @@
+capital_city,country,timezone,avg_temp_c,avg_temp_period,avg_temp_basis,iso_alpha2,all_country_timezones,temperature_source,location_metadata_source
+Kabul,Afghanistan,Asia/Kabul,15.25,2005-01 to 2012-12,Country mean monthly land temperature,AF,Asia/Kabul,Berkeley Earth monthly country temperature data,countryinfo
+Tirana,Albania,Europe/Tirane,13.55,2005-01 to 2012-12,Country mean monthly land temperature,AL,Europe/Tirane,Berkeley Earth monthly country temperature data,countryinfo
+Algiers,Algeria,Africa/Algiers,24.24,2005-01 to 2012-12,Country mean monthly land temperature,DZ,Africa/Algiers,Berkeley Earth monthly country temperature data,countryinfo
+Pago Pago,American Samoa,Pacific/Pago_Pago,27.2,2005-01 to 2012-12,Country mean monthly land temperature,AS,Pacific/Pago_Pago,Berkeley Earth monthly country temperature data,countryinfo
+Andorra la Vella,Andorra,Europe/Andorra,12.25,2005-01 to 2012-12,Country mean monthly land temperature,AD,Europe/Andorra,Berkeley Earth monthly country temperature data,manual
+Luanda,Angola,Africa/Luanda,22.35,2005-01 to 2012-12,Country mean monthly land temperature,AO,Africa/Luanda,Berkeley Earth monthly country temperature data,countryinfo
+The Valley,Anguilla,America/Anguilla,27.59,2005-01 to 2012-12,Country mean monthly land temperature,AI,America/Anguilla,Berkeley Earth monthly country temperature data,countryinfo
+,Antarctica,Antarctica/McMurdo,,2005-01 to 2012-12,Country mean monthly land temperature,AQ,Antarctica/McMurdo | Antarctica/Casey | Antarctica/Davis | Antarctica/DumontDUrville | Antarctica/Mawson | Antarctica/Palmer | Antarctica/Rothera | Antarctica/Syowa | Antarctica/Troll | Antarctica/Vostok,Berkeley Earth monthly country temperature data,manual
+Saint John's,Antigua And Barbuda,America/Antigua,27.41,2005-01 to 2012-12,Country mean monthly land temperature,AG,America/Antigua,Berkeley Earth monthly country temperature data,countryinfo
+Buenos Aires,Argentina,America/Argentina/Buenos_Aires,15.3,2005-01 to 2012-12,Country mean monthly land temperature,AR,America/Argentina/Buenos_Aires | America/Argentina/Cordoba | America/Argentina/Salta | America/Argentina/Jujuy | America/Argentina/Tucuman | America/Argentina/Catamarca | America/Argentina/La_Rioja | America/Argentina/San_Juan | America/Argentina/Mendoza | America/Argentina/San_Luis | America/Argentina/Rio_Gallegos | America/Argentina/Ushuaia,Berkeley Earth monthly country temperature data,countryinfo
+Yerevan,Armenia,Asia/Yerevan,9.98,2005-01 to 2012-12,Country mean monthly land temperature,AM,Asia/Yerevan,Berkeley Earth monthly country temperature data,countryinfo
+Oranjestad,Aruba,America/Aruba,28.73,2005-01 to 2012-12,Country mean monthly land temperature,AW,America/Aruba,Berkeley Earth monthly country temperature data,countryinfo
+Canberra,Australia,Australia/Lord_Howe,22.3,2005-01 to 2012-12,Country mean monthly land temperature,AU,Australia/Lord_Howe | Antarctica/Macquarie | Australia/Hobart | Australia/Melbourne | Australia/Sydney | Australia/Broken_Hill | Australia/Brisbane | Australia/Lindeman | Australia/Adelaide | Australia/Darwin | Australia/Perth | Australia/Eucla,Berkeley Earth monthly country temperature data,countryinfo
+Vienna,Austria,Europe/Vienna,7.42,2005-01 to 2012-12,Country mean monthly land temperature,AT,Europe/Vienna,Berkeley Earth monthly country temperature data,countryinfo
+Baku,Azerbaijan,Asia/Baku,12.72,2005-01 to 2012-12,Country mean monthly land temperature,AZ,Asia/Baku,Berkeley Earth monthly country temperature data,countryinfo
+Nassau,Bahamas,America/Nassau,25.78,2005-01 to 2012-12,Country mean monthly land temperature,BS,America/Nassau,Berkeley Earth monthly country temperature data,manual
+Manama,Bahrain,Asia/Bahrain,27.31,2005-01 to 2012-12,Country mean monthly land temperature,BH,Asia/Bahrain,Berkeley Earth monthly country temperature data,countryinfo
+,Baker Island,Pacific/Midway,26.08,2005-01 to 2012-12,Country mean monthly land temperature,UM,Pacific/Midway | Pacific/Wake,Berkeley Earth monthly country temperature data,manual
+Dhaka,Bangladesh,Asia/Dhaka,25.58,2005-01 to 2012-12,Country mean monthly land temperature,BD,Asia/Dhaka,Berkeley Earth monthly country temperature data,countryinfo
+Bridgetown,Barbados,America/Barbados,27.43,2005-01 to 2012-12,Country mean monthly land temperature,BB,America/Barbados,Berkeley Earth monthly country temperature data,countryinfo
+Minsk,Belarus,Europe/Minsk,7.33,2005-01 to 2012-12,Country mean monthly land temperature,BY,Europe/Minsk,Berkeley Earth monthly country temperature data,countryinfo
+Brussels,Belgium,Europe/Brussels,10.64,2005-01 to 2012-12,Country mean monthly land temperature,BE,Europe/Brussels,Berkeley Earth monthly country temperature data,countryinfo
+Belmopan,Belize,America/Belize,25.75,2005-01 to 2012-12,Country mean monthly land temperature,BZ,America/Belize,Berkeley Earth monthly country temperature data,countryinfo
+Porto-Novo,Benin,Africa/Porto-Novo,28.04,2005-01 to 2012-12,Country mean monthly land temperature,BJ,Africa/Porto-Novo,Berkeley Earth monthly country temperature data,countryinfo
+Thimphu,Bhutan,Asia/Thimphu,12.65,2005-01 to 2012-12,Country mean monthly land temperature,BT,Asia/Thimphu,Berkeley Earth monthly country temperature data,countryinfo
+Sucre,Bolivia,America/La_Paz,21.39,2005-01 to 2012-12,Country mean monthly land temperature,BO,America/La_Paz,Berkeley Earth monthly country temperature data,countryinfo
+Kralendijk,"Bonaire, Saint Eustatius And Saba",America/Kralendijk,28.05,2005-01 to 2012-12,Country mean monthly land temperature,BQ,America/Kralendijk,Berkeley Earth monthly country temperature data,manual
+Sarajevo,Bosnia And Herzegovina,Europe/Sarajevo,11.54,2005-01 to 2012-12,Country mean monthly land temperature,BA,Europe/Sarajevo,Berkeley Earth monthly country temperature data,countryinfo
+Gaborone,Botswana,Africa/Gaborone,22.39,2005-01 to 2012-12,Country mean monthly land temperature,BW,Africa/Gaborone,Berkeley Earth monthly country temperature data,countryinfo
+Brasília,Brazil,America/Noronha,25.62,2005-01 to 2012-12,Country mean monthly land temperature,BR,America/Noronha | America/Belem | America/Fortaleza | America/Recife | America/Araguaina | America/Maceio | America/Bahia | America/Sao_Paulo | America/Campo_Grande | America/Cuiaba | America/Santarem | America/Porto_Velho | America/Boa_Vista | America/Manaus | America/Eirunepe | America/Rio_Branco,Berkeley Earth monthly country temperature data,countryinfo
+Road Town,British Virgin Islands,America/Tortola,27.32,2005-01 to 2012-12,Country mean monthly land temperature,VG,America/Tortola,Berkeley Earth monthly country temperature data,manual
+Sofia,Bulgaria,Europe/Sofia,11.62,2005-01 to 2012-12,Country mean monthly land temperature,BG,Europe/Sofia,Berkeley Earth monthly country temperature data,countryinfo
+Ouagadougou,Burkina Faso,Africa/Ouagadougou,28.96,2005-01 to 2012-12,Country mean monthly land temperature,BF,Africa/Ouagadougou,Berkeley Earth monthly country temperature data,countryinfo
+Naypyidaw,Burma,Asia/Yangon,24.47,2005-01 to 2012-12,Country mean monthly land temperature,MM,Asia/Yangon,Berkeley Earth monthly country temperature data,manual
+Bujumbura,Burundi,Africa/Bujumbura,20.85,2005-01 to 2012-12,Country mean monthly land temperature,BI,Africa/Bujumbura,Berkeley Earth monthly country temperature data,countryinfo
+Phnom Penh,Cambodia,Asia/Phnom_Penh,27.36,2005-01 to 2012-12,Country mean monthly land temperature,KH,Asia/Phnom_Penh,Berkeley Earth monthly country temperature data,countryinfo
+Yaoundé,Cameroon,Africa/Douala,25.19,2005-01 to 2012-12,Country mean monthly land temperature,CM,Africa/Douala,Berkeley Earth monthly country temperature data,countryinfo
+Ottawa,Canada,America/St_Johns,-3.36,2005-01 to 2012-12,Country mean monthly land temperature,CA,America/St_Johns | America/Halifax | America/Glace_Bay | America/Moncton | America/Goose_Bay | America/Blanc-Sablon | America/Toronto | America/Iqaluit | America/Atikokan | America/Winnipeg | America/Resolute | America/Rankin_Inlet | America/Regina | America/Swift_Current | America/Edmonton | America/Cambridge_Bay | America/Inuvik | America/Creston | America/Dawson_Creek | America/Fort_Nelson | America/Whitehorse | America/Dawson | America/Vancouver,Berkeley Earth monthly country temperature data,countryinfo
+Praia,Cape Verde,Atlantic/Cape_Verde,25.1,2005-01 to 2012-12,Country mean monthly land temperature,CV,Atlantic/Cape_Verde,Berkeley Earth monthly country temperature data,countryinfo
+George Town,Cayman Islands,America/Cayman,27.39,2005-01 to 2012-12,Country mean monthly land temperature,KY,America/Cayman,Berkeley Earth monthly country temperature data,countryinfo
+Bangui,Central African Republic,Africa/Bangui,26.09,2005-01 to 2012-12,Country mean monthly land temperature,CF,Africa/Bangui,Berkeley Earth monthly country temperature data,countryinfo
+N'Djamena,Chad,Africa/Ndjamena,28.04,2005-01 to 2012-12,Country mean monthly land temperature,TD,Africa/Ndjamena,Berkeley Earth monthly country temperature data,countryinfo
+Santiago,Chile,America/Santiago,9.97,2005-01 to 2012-12,Country mean monthly land temperature,CL,America/Santiago | America/Coyhaique | America/Punta_Arenas | Pacific/Easter,Berkeley Earth monthly country temperature data,countryinfo
+Beijing,China,Asia/Shanghai,7.61,2005-01 to 2012-12,Country mean monthly land temperature,CN,Asia/Shanghai | Asia/Urumqi,Berkeley Earth monthly country temperature data,countryinfo
+Flying Fish Cove,Christmas Island,Indian/Christmas,26.56,2005-01 to 2012-12,Country mean monthly land temperature,CX,Indian/Christmas,Berkeley Earth monthly country temperature data,countryinfo
+Bogotá,Colombia,America/Bogota,25.47,2005-01 to 2012-12,Country mean monthly land temperature,CO,America/Bogota,Berkeley Earth monthly country temperature data,countryinfo
+Moroni,Comoros,Indian/Comoro,26.52,2005-01 to 2012-12,Country mean monthly land temperature,KM,Indian/Comoro,Berkeley Earth monthly country temperature data,countryinfo
+Brazzaville,Congo,Africa/Brazzaville,25.2,2005-01 to 2012-12,Country mean monthly land temperature,CG,Africa/Brazzaville,Berkeley Earth monthly country temperature data,manual
+Kinshasa,Congo (Democratic Republic Of The),Africa/Kinshasa,24.49,2005-01 to 2012-12,Country mean monthly land temperature,CD,Africa/Kinshasa | Africa/Lubumbashi,Berkeley Earth monthly country temperature data,manual
+San José,Costa Rica,America/Costa_Rica,26.31,2005-01 to 2012-12,Country mean monthly land temperature,CR,America/Costa_Rica,Berkeley Earth monthly country temperature data,countryinfo
+Zagreb,Croatia,Europe/Zagreb,12.53,2005-01 to 2012-12,Country mean monthly land temperature,HR,Europe/Zagreb,Berkeley Earth monthly country temperature data,countryinfo
+Havana,Cuba,America/Havana,26.06,2005-01 to 2012-12,Country mean monthly land temperature,CU,America/Havana,Berkeley Earth monthly country temperature data,countryinfo
+Willemstad,Curaçao,America/Curacao,28.18,2005-01 to 2012-12,Country mean monthly land temperature,CW,America/Curacao,Berkeley Earth monthly country temperature data,manual
+Nicosia,Cyprus,Asia/Nicosia,20.0,2005-01 to 2012-12,Country mean monthly land temperature,CY,Asia/Nicosia | Asia/Famagusta,Berkeley Earth monthly country temperature data,countryinfo
+Prague,Czech Republic,Europe/Prague,8.88,2005-01 to 2012-12,Country mean monthly land temperature,CZ,Europe/Prague,Berkeley Earth monthly country temperature data,countryinfo
+Yamoussoukro,Côte D'Ivoire,Africa/Abidjan,26.86,2005-01 to 2012-12,Country mean monthly land temperature,CI,Africa/Abidjan,Berkeley Earth monthly country temperature data,manual
+Copenhagen,Denmark,Europe/Copenhagen,-16.3,2005-01 to 2012-12,Country mean monthly land temperature,DK,Europe/Copenhagen,Berkeley Earth monthly country temperature data,countryinfo
+Djibouti,Djibouti,Africa/Djibouti,29.78,2005-01 to 2012-12,Country mean monthly land temperature,DJ,Africa/Djibouti,Berkeley Earth monthly country temperature data,countryinfo
+Roseau,Dominica,America/Dominica,27.1,2005-01 to 2012-12,Country mean monthly land temperature,DM,America/Dominica,Berkeley Earth monthly country temperature data,countryinfo
+Santo Domingo,Dominican Republic,America/Santo_Domingo,26.43,2005-01 to 2012-12,Country mean monthly land temperature,DO,America/Santo_Domingo,Berkeley Earth monthly country temperature data,countryinfo
+Quito,Ecuador,America/Guayaquil,22.48,2005-01 to 2012-12,Country mean monthly land temperature,EC,America/Guayaquil | Pacific/Galapagos,Berkeley Earth monthly country temperature data,countryinfo
+Cairo,Egypt,Africa/Cairo,23.81,2005-01 to 2012-12,Country mean monthly land temperature,EG,Africa/Cairo,Berkeley Earth monthly country temperature data,countryinfo
+San Salvador,El Salvador,America/El_Salvador,25.56,2005-01 to 2012-12,Country mean monthly land temperature,SV,America/El_Salvador,Berkeley Earth monthly country temperature data,countryinfo
+Malabo,Equatorial Guinea,Africa/Malabo,25.72,2005-01 to 2012-12,Country mean monthly land temperature,GQ,Africa/Malabo,Berkeley Earth monthly country temperature data,countryinfo
+Asmara,Eritrea,Africa/Asmara,27.73,2005-01 to 2012-12,Country mean monthly land temperature,ER,Africa/Asmara,Berkeley Earth monthly country temperature data,countryinfo
+Tallinn,Estonia,Europe/Tallinn,6.26,2005-01 to 2012-12,Country mean monthly land temperature,EE,Europe/Tallinn,Berkeley Earth monthly country temperature data,countryinfo
+Addis Ababa,Ethiopia,Africa/Addis_Ababa,23.91,2005-01 to 2012-12,Country mean monthly land temperature,ET,Africa/Addis_Ababa,Berkeley Earth monthly country temperature data,countryinfo
+Stanley,Falkland Islands (Islas Malvinas),Atlantic/Stanley,6.77,2005-01 to 2012-12,Country mean monthly land temperature,FK,Atlantic/Stanley,Berkeley Earth monthly country temperature data,manual
+Tórshavn,Faroe Islands,Atlantic/Faroe,7.47,2005-01 to 2012-12,Country mean monthly land temperature,FO,Atlantic/Faroe,Berkeley Earth monthly country temperature data,countryinfo
+Palikir,Federated States Of Micronesia,Pacific/Chuuk,27.54,2005-01 to 2012-12,Country mean monthly land temperature,FM,Pacific/Chuuk | Pacific/Pohnpei | Pacific/Kosrae,Berkeley Earth monthly country temperature data,countryinfo
+Suva,Fiji,Pacific/Fiji,25.68,2005-01 to 2012-12,Country mean monthly land temperature,FJ,Pacific/Fiji,Berkeley Earth monthly country temperature data,countryinfo
+Helsinki,Finland,Europe/Helsinki,2.68,2005-01 to 2012-12,Country mean monthly land temperature,FI,Europe/Helsinki,Berkeley Earth monthly country temperature data,countryinfo
+Paris,France,Europe/Paris,13.82,2005-01 to 2012-12,Country mean monthly land temperature,FR,Europe/Paris,Berkeley Earth monthly country temperature data,countryinfo
+Cayenne,French Guiana,America/Cayenne,26.72,2005-01 to 2012-12,Country mean monthly land temperature,GF,America/Cayenne,Berkeley Earth monthly country temperature data,countryinfo
+Papeetē,French Polynesia,Pacific/Tahiti,26.78,2005-01 to 2012-12,Country mean monthly land temperature,PF,Pacific/Tahiti | Pacific/Marquesas | Pacific/Gambier,Berkeley Earth monthly country temperature data,countryinfo
+Port-aux-Français,French Southern And Antarctic Lands,Indian/Kerguelen,5.37,2005-01 to 2012-12,Country mean monthly land temperature,TF,Indian/Kerguelen,Berkeley Earth monthly country temperature data,countryinfo
+Libreville,Gabon,Africa/Libreville,25.03,2005-01 to 2012-12,Country mean monthly land temperature,GA,Africa/Libreville,Berkeley Earth monthly country temperature data,countryinfo
+Banjul,Gambia,Africa/Banjul,28.35,2005-01 to 2012-12,Country mean monthly land temperature,GM,Africa/Banjul,Berkeley Earth monthly country temperature data,manual
+Gaza,Gaza Strip,Asia/Gaza,20.44,2005-01 to 2012-12,Country mean monthly land temperature,PS,Asia/Gaza | Asia/Hebron,Berkeley Earth monthly country temperature data,manual
+Tbilisi,Georgia,Asia/Tbilisi,9.58,2005-01 to 2012-12,Country mean monthly land temperature,GE,Asia/Tbilisi,Berkeley Earth monthly country temperature data,countryinfo
+Berlin,Germany,Europe/Berlin,9.36,2005-01 to 2012-12,Country mean monthly land temperature,DE,Europe/Berlin | Europe/Busingen,Berkeley Earth monthly country temperature data,countryinfo
+Accra,Ghana,Africa/Accra,27.57,2005-01 to 2012-12,Country mean monthly land temperature,GH,Africa/Accra,Berkeley Earth monthly country temperature data,countryinfo
+Athens,Greece,Europe/Athens,15.77,2005-01 to 2012-12,Country mean monthly land temperature,GR,Europe/Athens,Berkeley Earth monthly country temperature data,countryinfo
+Nuuk,Greenland,America/Nuuk,-16.82,2005-01 to 2012-12,Country mean monthly land temperature,GL,America/Nuuk | America/Danmarkshavn | America/Scoresbysund | America/Thule,Berkeley Earth monthly country temperature data,countryinfo
+St. George's,Grenada,America/Grenada,27.71,2005-01 to 2012-12,Country mean monthly land temperature,GD,America/Grenada,Berkeley Earth monthly country temperature data,countryinfo
+Basse-Terre,Guadeloupe,America/Guadeloupe,27.3,2005-01 to 2012-12,Country mean monthly land temperature,GP,America/Guadeloupe,Berkeley Earth monthly country temperature data,countryinfo
+Hagåtña,Guam,Pacific/Guam,27.38,2005-01 to 2012-12,Country mean monthly land temperature,GU,Pacific/Guam,Berkeley Earth monthly country temperature data,countryinfo
+Guatemala City,Guatemala,America/Guatemala,23.79,2005-01 to 2012-12,Country mean monthly land temperature,GT,America/Guatemala,Berkeley Earth monthly country temperature data,countryinfo
+St. Peter Port,Guernsey,Europe/Guernsey,11.88,2005-01 to 2012-12,Country mean monthly land temperature,GG,Europe/Guernsey,Berkeley Earth monthly country temperature data,countryinfo
+Conakry,Guinea,Africa/Conakry,26.32,2005-01 to 2012-12,Country mean monthly land temperature,GN,Africa/Conakry,Berkeley Earth monthly country temperature data,countryinfo
+Bissau,Guinea Bissau,Africa/Bissau,27.58,2005-01 to 2012-12,Country mean monthly land temperature,GW,Africa/Bissau,Berkeley Earth monthly country temperature data,manual
+Georgetown,Guyana,America/Guyana,26.86,2005-01 to 2012-12,Country mean monthly land temperature,GY,America/Guyana,Berkeley Earth monthly country temperature data,countryinfo
+Port-au-Prince,Haiti,America/Port-au-Prince,27.09,2005-01 to 2012-12,Country mean monthly land temperature,HT,America/Port-au-Prince,Berkeley Earth monthly country temperature data,countryinfo
+,Heard Island And Mcdonald Islands,,2.87,2005-01 to 2012-12,Country mean monthly land temperature,HM,,Berkeley Earth monthly country temperature data,countryinfo
+Tegucigalpa,Honduras,America/Tegucigalpa,25.4,2005-01 to 2012-12,Country mean monthly land temperature,HN,America/Tegucigalpa,Berkeley Earth monthly country temperature data,countryinfo
+City of Victoria,Hong Kong,Asia/Hong_Kong,23.19,2005-01 to 2012-12,Country mean monthly land temperature,HK,Asia/Hong_Kong,Berkeley Earth monthly country temperature data,countryinfo
+Budapest,Hungary,Europe/Budapest,10.96,2005-01 to 2012-12,Country mean monthly land temperature,HU,Europe/Budapest,Berkeley Earth monthly country temperature data,countryinfo
+Reykjavik,Iceland,Atlantic/Reykjavik,2.46,2005-01 to 2012-12,Country mean monthly land temperature,IS,Atlantic/Reykjavik,Berkeley Earth monthly country temperature data,countryinfo
+New Delhi,India,Asia/Kolkata,24.69,2005-01 to 2012-12,Country mean monthly land temperature,IN,Asia/Kolkata,Berkeley Earth monthly country temperature data,countryinfo
+Jakarta,Indonesia,Asia/Jakarta,26.34,2005-01 to 2012-12,Country mean monthly land temperature,ID,Asia/Jakarta | Asia/Pontianak | Asia/Makassar | Asia/Jayapura,Berkeley Earth monthly country temperature data,countryinfo
+Tehran,Iran,Asia/Tehran,19.09,2005-01 to 2012-12,Country mean monthly land temperature,IR,Asia/Tehran,Berkeley Earth monthly country temperature data,countryinfo
+Baghdad,Iraq,Asia/Baghdad,23.18,2005-01 to 2012-12,Country mean monthly land temperature,IQ,Asia/Baghdad,Berkeley Earth monthly country temperature data,countryinfo
+Dublin,Ireland,Europe/Dublin,10.25,2005-01 to 2012-12,Country mean monthly land temperature,IE,Europe/Dublin,Berkeley Earth monthly country temperature data,countryinfo
+Douglas,Isle Of Man,Europe/Isle_of_Man,10.31,2005-01 to 2012-12,Country mean monthly land temperature,IM,Europe/Isle_of_Man,Berkeley Earth monthly country temperature data,countryinfo
+Jerusalem,Israel,Asia/Jerusalem,20.87,2005-01 to 2012-12,Country mean monthly land temperature,IL,Asia/Jerusalem,Berkeley Earth monthly country temperature data,countryinfo
+Rome,Italy,Europe/Rome,13.8,2005-01 to 2012-12,Country mean monthly land temperature,IT,Europe/Rome,Berkeley Earth monthly country temperature data,countryinfo
+Kingston,Jamaica,America/Jamaica,26.8,2005-01 to 2012-12,Country mean monthly land temperature,JM,America/Jamaica,Berkeley Earth monthly country temperature data,countryinfo
+Tokyo,Japan,Asia/Tokyo,12.85,2005-01 to 2012-12,Country mean monthly land temperature,JP,Asia/Tokyo,Berkeley Earth monthly country temperature data,countryinfo
+Saint Helier,Jersey,Europe/Jersey,11.88,2005-01 to 2012-12,Country mean monthly land temperature,JE,Europe/Jersey,Berkeley Earth monthly country temperature data,countryinfo
+Amman,Jordan,Asia/Amman,20.62,2005-01 to 2012-12,Country mean monthly land temperature,JO,Asia/Amman,Berkeley Earth monthly country temperature data,countryinfo
+Astana,Kazakhstan,Asia/Almaty,6.61,2005-01 to 2012-12,Country mean monthly land temperature,KZ,Asia/Almaty | Asia/Qyzylorda | Asia/Qostanay | Asia/Aqtobe | Asia/Aqtau | Asia/Atyrau | Asia/Oral,Berkeley Earth monthly country temperature data,countryinfo
+Nairobi,Kenya,Africa/Nairobi,24.93,2005-01 to 2012-12,Country mean monthly land temperature,KE,Africa/Nairobi,Berkeley Earth monthly country temperature data,countryinfo
+,Kingman Reef,Pacific/Midway,27.84,2005-01 to 2012-12,Country mean monthly land temperature,UM,Pacific/Midway | Pacific/Wake,Berkeley Earth monthly country temperature data,manual
+South Tarawa,Kiribati,Pacific/Tarawa,27.44,2005-01 to 2012-12,Country mean monthly land temperature,KI,Pacific/Tarawa | Pacific/Kanton | Pacific/Kiritimati,Berkeley Earth monthly country temperature data,countryinfo
+Kuwait City,Kuwait,Asia/Kuwait,26.47,2005-01 to 2012-12,Country mean monthly land temperature,KW,Asia/Kuwait,Berkeley Earth monthly country temperature data,countryinfo
+Bishkek,Kyrgyzstan,Asia/Bishkek,4.47,2005-01 to 2012-12,Country mean monthly land temperature,KG,Asia/Bishkek,Berkeley Earth monthly country temperature data,countryinfo
+Vientiane,Laos,Asia/Vientiane,24.3,2005-01 to 2012-12,Country mean monthly land temperature,LA,Asia/Vientiane,Berkeley Earth monthly country temperature data,countryinfo
+Riga,Latvia,Europe/Riga,6.73,2005-01 to 2012-12,Country mean monthly land temperature,LV,Europe/Riga,Berkeley Earth monthly country temperature data,countryinfo
+Beirut,Lebanon,Asia/Beirut,18.85,2005-01 to 2012-12,Country mean monthly land temperature,LB,Asia/Beirut,Berkeley Earth monthly country temperature data,countryinfo
+Maseru,Lesotho,Africa/Maseru,14.38,2005-01 to 2012-12,Country mean monthly land temperature,LS,Africa/Maseru,Berkeley Earth monthly country temperature data,countryinfo
+Monrovia,Liberia,Africa/Monrovia,26.29,2005-01 to 2012-12,Country mean monthly land temperature,LR,Africa/Monrovia,Berkeley Earth monthly country temperature data,countryinfo
+Tripoli,Libya,Africa/Tripoli,23.44,2005-01 to 2012-12,Country mean monthly land temperature,LY,Africa/Tripoli,Berkeley Earth monthly country temperature data,countryinfo
+Vaduz,Liechtenstein,Europe/Vaduz,5.79,2005-01 to 2012-12,Country mean monthly land temperature,LI,Europe/Vaduz,Berkeley Earth monthly country temperature data,countryinfo
+Vilnius,Lithuania,Europe/Vilnius,7.27,2005-01 to 2012-12,Country mean monthly land temperature,LT,Europe/Vilnius,Berkeley Earth monthly country temperature data,countryinfo
+Luxembourg,Luxembourg,Europe/Luxembourg,10.32,2005-01 to 2012-12,Country mean monthly land temperature,LU,Europe/Luxembourg,Berkeley Earth monthly country temperature data,countryinfo
+,Macau,Asia/Macau,22.93,2005-01 to 2012-12,Country mean monthly land temperature,MO,Asia/Macau,Berkeley Earth monthly country temperature data,countryinfo
+Skopje,Macedonia,Europe/Skopje,11.38,2005-01 to 2012-12,Country mean monthly land temperature,MK,Europe/Skopje,Berkeley Earth monthly country temperature data,manual
+Antananarivo,Madagascar,Indian/Antananarivo,23.6,2005-01 to 2012-12,Country mean monthly land temperature,MG,Indian/Antananarivo,Berkeley Earth monthly country temperature data,countryinfo
+Lilongwe,Malawi,Africa/Blantyre,22.21,2005-01 to 2012-12,Country mean monthly land temperature,MW,Africa/Blantyre,Berkeley Earth monthly country temperature data,countryinfo
+Kuala Lumpur,Malaysia,Asia/Kuala_Lumpur,26.56,2005-01 to 2012-12,Country mean monthly land temperature,MY,Asia/Kuala_Lumpur | Asia/Kuching,Berkeley Earth monthly country temperature data,countryinfo
+Bamako,Mali,Africa/Bamako,29.29,2005-01 to 2012-12,Country mean monthly land temperature,ML,Africa/Bamako,Berkeley Earth monthly country temperature data,countryinfo
+Valletta,Malta,Europe/Malta,19.55,2005-01 to 2012-12,Country mean monthly land temperature,MT,Europe/Malta,Berkeley Earth monthly country temperature data,countryinfo
+Fort-de-France,Martinique,America/Martinique,27.1,2005-01 to 2012-12,Country mean monthly land temperature,MQ,America/Martinique,Berkeley Earth monthly country temperature data,countryinfo
+Nouakchott,Mauritania,Africa/Nouakchott,28.56,2005-01 to 2012-12,Country mean monthly land temperature,MR,Africa/Nouakchott,Berkeley Earth monthly country temperature data,countryinfo
+Port Louis,Mauritius,Indian/Mauritius,24.39,2005-01 to 2012-12,Country mean monthly land temperature,MU,Indian/Mauritius,Berkeley Earth monthly country temperature data,countryinfo
+Mamoudzou,Mayotte,Indian/Mayotte,27.18,2005-01 to 2012-12,Country mean monthly land temperature,YT,Indian/Mayotte,Berkeley Earth monthly country temperature data,countryinfo
+Mexico City,Mexico,America/Mexico_City,21.33,2005-01 to 2012-12,Country mean monthly land temperature,MX,America/Mexico_City | America/Cancun | America/Merida | America/Monterrey | America/Matamoros | America/Chihuahua | America/Ciudad_Juarez | America/Ojinaga | America/Mazatlan | America/Bahia_Banderas | America/Hermosillo | America/Tijuana,Berkeley Earth monthly country temperature data,countryinfo
+Chișinău,Moldova,Europe/Chisinau,10.37,2005-01 to 2012-12,Country mean monthly land temperature,MD,Europe/Chisinau,Berkeley Earth monthly country temperature data,countryinfo
+Monaco,Monaco,Europe/Monaco,10.12,2005-01 to 2012-12,Country mean monthly land temperature,MC,Europe/Monaco,Berkeley Earth monthly country temperature data,countryinfo
+Ulan Bator,Mongolia,Asia/Ulaanbaatar,0.45,2005-01 to 2012-12,Country mean monthly land temperature,MN,Asia/Ulaanbaatar | Asia/Hovd,Berkeley Earth monthly country temperature data,countryinfo
+Podgorica,Montenegro,Europe/Podgorica,11.17,2005-01 to 2012-12,Country mean monthly land temperature,ME,Europe/Podgorica,Berkeley Earth monthly country temperature data,manual
+Plymouth,Montserrat,America/Montserrat,27.35,2005-01 to 2012-12,Country mean monthly land temperature,MS,America/Montserrat,Berkeley Earth monthly country temperature data,countryinfo
+Rabat,Morocco,Africa/Casablanca,18.77,2005-01 to 2012-12,Country mean monthly land temperature,MA,Africa/Casablanca,Berkeley Earth monthly country temperature data,countryinfo
+Maputo,Mozambique,Africa/Maputo,24.3,2005-01 to 2012-12,Country mean monthly land temperature,MZ,Africa/Maputo,Berkeley Earth monthly country temperature data,countryinfo
+Windhoek,Namibia,Africa/Windhoek,20.95,2005-01 to 2012-12,Country mean monthly land temperature,NA,Africa/Windhoek,Berkeley Earth monthly country temperature data,countryinfo
+Kathmandu,Nepal,Asia/Kathmandu,15.7,2005-01 to 2012-12,Country mean monthly land temperature,NP,Asia/Kathmandu,Berkeley Earth monthly country temperature data,countryinfo
+Amsterdam,Netherlands,Europe/Amsterdam,10.72,2005-01 to 2012-12,Country mean monthly land temperature,NL,Europe/Amsterdam,Berkeley Earth monthly country temperature data,countryinfo
+Nouméa,New Caledonia,Pacific/Noumea,23.48,2005-01 to 2012-12,Country mean monthly land temperature,NC,Pacific/Noumea,Berkeley Earth monthly country temperature data,countryinfo
+Wellington,New Zealand,Pacific/Auckland,11.02,2005-01 to 2012-12,Country mean monthly land temperature,NZ,Pacific/Auckland | Pacific/Chatham,Berkeley Earth monthly country temperature data,countryinfo
+Managua,Nicaragua,America/Managua,26.69,2005-01 to 2012-12,Country mean monthly land temperature,NI,America/Managua,Berkeley Earth monthly country temperature data,countryinfo
+Niamey,Niger,Africa/Niamey,28.49,2005-01 to 2012-12,Country mean monthly land temperature,NE,Africa/Niamey,Berkeley Earth monthly country temperature data,countryinfo
+Abuja,Nigeria,Africa/Lagos,27.68,2005-01 to 2012-12,Country mean monthly land temperature,NG,Africa/Lagos,Berkeley Earth monthly country temperature data,countryinfo
+Alofi,Niue,Pacific/Niue,25.71,2005-01 to 2012-12,Country mean monthly land temperature,NU,Pacific/Niue,Berkeley Earth monthly country temperature data,countryinfo
+Pyongyang,North Korea,Asia/Pyongyang,7.71,2005-01 to 2012-12,Country mean monthly land temperature,KP,Asia/Pyongyang,Berkeley Earth monthly country temperature data,countryinfo
+Saipan,Northern Mariana Islands,Pacific/Saipan,27.38,2005-01 to 2012-12,Country mean monthly land temperature,MP,Pacific/Saipan,Berkeley Earth monthly country temperature data,countryinfo
+Oslo,Norway,Europe/Oslo,1.49,2005-01 to 2012-12,Country mean monthly land temperature,NO,Europe/Oslo,Berkeley Earth monthly country temperature data,countryinfo
+Muscat,Oman,Asia/Muscat,28.17,2005-01 to 2012-12,Country mean monthly land temperature,OM,Asia/Muscat,Berkeley Earth monthly country temperature data,countryinfo
+Islamabad,Pakistan,Asia/Karachi,21.64,2005-01 to 2012-12,Country mean monthly land temperature,PK,Asia/Karachi,Berkeley Earth monthly country temperature data,countryinfo
+Ngerulmud,Palau,Pacific/Palau,27.72,2005-01 to 2012-12,Country mean monthly land temperature,PW,Pacific/Palau,Berkeley Earth monthly country temperature data,countryinfo
+Ramallah,Palestina,Asia/Gaza,24.01,2005-01 to 2012-12,Country mean monthly land temperature,PS,Asia/Gaza | Asia/Hebron,Berkeley Earth monthly country temperature data,manual
+,Palmyra Atoll,Pacific/Midway,27.87,2005-01 to 2012-12,Country mean monthly land temperature,UM,Pacific/Midway | Pacific/Wake,Berkeley Earth monthly country temperature data,manual
+Panama City,Panama,America/Panama,27.02,2005-01 to 2012-12,Country mean monthly land temperature,PA,America/Panama,Berkeley Earth monthly country temperature data,countryinfo
+Port Moresby,Papua New Guinea,Pacific/Port_Moresby,24.9,2005-01 to 2012-12,Country mean monthly land temperature,PG,Pacific/Port_Moresby | Pacific/Bougainville,Berkeley Earth monthly country temperature data,countryinfo
+Asunción,Paraguay,America/Asuncion,24.0,2005-01 to 2012-12,Country mean monthly land temperature,PY,America/Asuncion,Berkeley Earth monthly country temperature data,countryinfo
+Lima,Peru,America/Lima,20.41,2005-01 to 2012-12,Country mean monthly land temperature,PE,America/Lima,Berkeley Earth monthly country temperature data,countryinfo
+Manila,Philippines,Asia/Manila,27.08,2005-01 to 2012-12,Country mean monthly land temperature,PH,Asia/Manila,Berkeley Earth monthly country temperature data,countryinfo
+Warsaw,Poland,Europe/Warsaw,8.73,2005-01 to 2012-12,Country mean monthly land temperature,PL,Europe/Warsaw,Berkeley Earth monthly country temperature data,countryinfo
+Lisbon,Portugal,Europe/Lisbon,15.65,2005-01 to 2012-12,Country mean monthly land temperature,PT,Europe/Lisbon | Atlantic/Madeira | Atlantic/Azores,Berkeley Earth monthly country temperature data,countryinfo
+San Juan,Puerto Rico,America/Puerto_Rico,26.41,2005-01 to 2012-12,Country mean monthly land temperature,PR,America/Puerto_Rico,Berkeley Earth monthly country temperature data,countryinfo
+Doha,Qatar,Asia/Qatar,28.22,2005-01 to 2012-12,Country mean monthly land temperature,QA,Asia/Qatar,Berkeley Earth monthly country temperature data,countryinfo
+Saint-Denis,Reunion,Indian/Reunion,24.14,2005-01 to 2012-12,Country mean monthly land temperature,RE,Indian/Reunion,Berkeley Earth monthly country temperature data,countryinfo
+Bucharest,Romania,Europe/Bucharest,10.01,2005-01 to 2012-12,Country mean monthly land temperature,RO,Europe/Bucharest,Berkeley Earth monthly country temperature data,countryinfo
+Moscow,Russia,Europe/Kaliningrad,-3.87,2005-01 to 2012-12,Country mean monthly land temperature,RU,Europe/Kaliningrad | Europe/Moscow | Europe/Kirov | Europe/Volgograd | Europe/Astrakhan | Europe/Saratov | Europe/Ulyanovsk | Europe/Samara | Asia/Yekaterinburg | Asia/Omsk | Asia/Novosibirsk | Asia/Barnaul | Asia/Tomsk | Asia/Novokuznetsk | Asia/Krasnoyarsk | Asia/Irkutsk | Asia/Chita | Asia/Yakutsk | Asia/Khandyga | Asia/Vladivostok | Asia/Ust-Nera | Asia/Magadan | Asia/Sakhalin | Asia/Srednekolymsk | Asia/Kamchatka | Asia/Anadyr,Berkeley Earth monthly country temperature data,countryinfo
+Kigali,Rwanda,Africa/Kigali,20.01,2005-01 to 2012-12,Country mean monthly land temperature,RW,Africa/Kigali,Berkeley Earth monthly country temperature data,countryinfo
+Gustavia,Saint Barthélemy,America/St_Barthelemy,27.59,2005-01 to 2012-12,Country mean monthly land temperature,BL,America/St_Barthelemy,Berkeley Earth monthly country temperature data,manual
+Basseterre,Saint Kitts And Nevis,America/St_Kitts,26.83,2005-01 to 2012-12,Country mean monthly land temperature,KN,America/St_Kitts,Berkeley Earth monthly country temperature data,countryinfo
+Castries,Saint Lucia,America/St_Lucia,27.62,2005-01 to 2012-12,Country mean monthly land temperature,LC,America/St_Lucia,Berkeley Earth monthly country temperature data,countryinfo
+Marigot,Saint Martin,America/Marigot,27.59,2005-01 to 2012-12,Country mean monthly land temperature,MF,America/Marigot,Berkeley Earth monthly country temperature data,manual
+Saint-Pierre,Saint Pierre And Miquelon,America/Miquelon,5.9,2005-01 to 2012-12,Country mean monthly land temperature,PM,America/Miquelon,Berkeley Earth monthly country temperature data,countryinfo
+Kingstown,Saint Vincent And The Grenadines,America/St_Vincent,27.76,2005-01 to 2012-12,Country mean monthly land temperature,VC,America/St_Vincent,Berkeley Earth monthly country temperature data,countryinfo
+Apia,Samoa,Pacific/Apia,26.91,2005-01 to 2012-12,Country mean monthly land temperature,WS,Pacific/Apia,Berkeley Earth monthly country temperature data,countryinfo
+City of San Marino,San Marino,Europe/San_Marino,14.98,2005-01 to 2012-12,Country mean monthly land temperature,SM,Europe/San_Marino,Berkeley Earth monthly country temperature data,countryinfo
+São Tomé,Sao Tome And Principe,Africa/Sao_Tome,26.63,2005-01 to 2012-12,Country mean monthly land temperature,ST,Africa/Sao_Tome,Berkeley Earth monthly country temperature data,manual
+Riyadh,Saudi Arabia,Asia/Riyadh,26.77,2005-01 to 2012-12,Country mean monthly land temperature,SA,Asia/Riyadh,Berkeley Earth monthly country temperature data,countryinfo
+Dakar,Senegal,Africa/Dakar,28.8,2005-01 to 2012-12,Country mean monthly land temperature,SN,Africa/Dakar,Berkeley Earth monthly country temperature data,countryinfo
+Belgrade,Serbia,Europe/Belgrade,11.07,2005-01 to 2012-12,Country mean monthly land temperature,RS,Europe/Belgrade,Berkeley Earth monthly country temperature data,countryinfo
+Victoria,Seychelles,Indian/Mahe,27.63,2005-01 to 2012-12,Country mean monthly land temperature,SC,Indian/Mahe,Berkeley Earth monthly country temperature data,countryinfo
+Freetown,Sierra Leone,Africa/Freetown,26.92,2005-01 to 2012-12,Country mean monthly land temperature,SL,Africa/Freetown,Berkeley Earth monthly country temperature data,countryinfo
+Singapore,Singapore,Asia/Singapore,27.34,2005-01 to 2012-12,Country mean monthly land temperature,SG,Asia/Singapore,Berkeley Earth monthly country temperature data,countryinfo
+Philipsburg,Sint Maarten,America/Lower_Princes,27.59,2005-01 to 2012-12,Country mean monthly land temperature,SX,America/Lower_Princes,Berkeley Earth monthly country temperature data,manual
+Bratislava,Slovakia,Europe/Bratislava,8.77,2005-01 to 2012-12,Country mean monthly land temperature,SK,Europe/Bratislava,Berkeley Earth monthly country temperature data,countryinfo
+Ljubljana,Slovenia,Europe/Ljubljana,10.89,2005-01 to 2012-12,Country mean monthly land temperature,SI,Europe/Ljubljana,Berkeley Earth monthly country temperature data,countryinfo
+Honiara,Solomon Islands,Pacific/Guadalcanal,27.31,2005-01 to 2012-12,Country mean monthly land temperature,SB,Pacific/Guadalcanal,Berkeley Earth monthly country temperature data,countryinfo
+Mogadishu,Somalia,Africa/Mogadishu,27.8,2005-01 to 2012-12,Country mean monthly land temperature,SO,Africa/Mogadishu,Berkeley Earth monthly country temperature data,countryinfo
+Pretoria,South Africa,Africa/Johannesburg,17.92,2005-01 to 2012-12,Country mean monthly land temperature,ZA,Africa/Johannesburg,Berkeley Earth monthly country temperature data,countryinfo
+King Edward Point,South Georgia And The South Sandwich Isla,Atlantic/South_Georgia,2.14,2005-01 to 2012-12,Country mean monthly land temperature,GS,Atlantic/South_Georgia,Berkeley Earth monthly country temperature data,manual
+Seoul,South Korea,Asia/Seoul,12.74,2005-01 to 2012-12,Country mean monthly land temperature,KR,Asia/Seoul,Berkeley Earth monthly country temperature data,countryinfo
+Madrid,Spain,Europe/Madrid,14.62,2005-01 to 2012-12,Country mean monthly land temperature,ES,Europe/Madrid | Africa/Ceuta | Atlantic/Canary,Berkeley Earth monthly country temperature data,countryinfo
+Colombo,Sri Lanka,Asia/Colombo,27.69,2005-01 to 2012-12,Country mean monthly land temperature,LK,Asia/Colombo,Berkeley Earth monthly country temperature data,countryinfo
+Khartoum,Sudan,Africa/Khartoum,27.99,2005-01 to 2012-12,Country mean monthly land temperature,SD,Africa/Khartoum,Berkeley Earth monthly country temperature data,countryinfo
+Paramaribo,Suriname,America/Paramaribo,27.16,2005-01 to 2012-12,Country mean monthly land temperature,SR,America/Paramaribo,Berkeley Earth monthly country temperature data,countryinfo
+Longyearbyen,Svalbard And Jan Mayen,Arctic/Longyearbyen,-5.13,2005-01 to 2012-12,Country mean monthly land temperature,SJ,Arctic/Longyearbyen,Berkeley Earth monthly country temperature data,countryinfo
+Lobamba,Swaziland,Africa/Mbabane,19.53,2005-01 to 2012-12,Country mean monthly land temperature,SZ,Africa/Mbabane,Berkeley Earth monthly country temperature data,countryinfo
+Stockholm,Sweden,Europe/Stockholm,3.66,2005-01 to 2012-12,Country mean monthly land temperature,SE,Europe/Stockholm,Berkeley Earth monthly country temperature data,countryinfo
+Bern,Switzerland,Europe/Zurich,8.14,2005-01 to 2012-12,Country mean monthly land temperature,CH,Europe/Zurich,Berkeley Earth monthly country temperature data,countryinfo
+Damascus,Syria,Asia/Damascus,19.18,2005-01 to 2012-12,Country mean monthly land temperature,SY,Asia/Damascus,Berkeley Earth monthly country temperature data,countryinfo
+Taipei,Taiwan,Asia/Taipei,22.73,2005-01 to 2012-12,Country mean monthly land temperature,TW,Asia/Taipei,Berkeley Earth monthly country temperature data,countryinfo
+Dushanbe,Tajikistan,Asia/Dushanbe,5.21,2005-01 to 2012-12,Country mean monthly land temperature,TJ,Asia/Dushanbe,Berkeley Earth monthly country temperature data,countryinfo
+Dodoma,Tanzania,Africa/Dar_es_Salaam,23.12,2005-01 to 2012-12,Country mean monthly land temperature,TZ,Africa/Dar_es_Salaam,Berkeley Earth monthly country temperature data,countryinfo
+Bangkok,Thailand,Asia/Bangkok,26.75,2005-01 to 2012-12,Country mean monthly land temperature,TH,Asia/Bangkok,Berkeley Earth monthly country temperature data,countryinfo
+Dili,Timor Leste,Asia/Dili,26.44,2005-01 to 2012-12,Country mean monthly land temperature,TL,Asia/Dili,Berkeley Earth monthly country temperature data,manual
+Lomé,Togo,Africa/Lome,27.73,2005-01 to 2012-12,Country mean monthly land temperature,TG,Africa/Lome,Berkeley Earth monthly country temperature data,countryinfo
+Nuku'alofa,Tonga,Pacific/Tongatapu,23.87,2005-01 to 2012-12,Country mean monthly land temperature,TO,Pacific/Tongatapu,Berkeley Earth monthly country temperature data,countryinfo
+Port of Spain,Trinidad And Tobago,America/Port_of_Spain,27.08,2005-01 to 2012-12,Country mean monthly land temperature,TT,America/Port_of_Spain,Berkeley Earth monthly country temperature data,countryinfo
+Tunis,Tunisia,Africa/Tunis,21.21,2005-01 to 2012-12,Country mean monthly land temperature,TN,Africa/Tunis,Berkeley Earth monthly country temperature data,countryinfo
+Ankara,Turkey,Europe/Istanbul,12.78,2005-01 to 2012-12,Country mean monthly land temperature,TR,Europe/Istanbul,Berkeley Earth monthly country temperature data,countryinfo
+Ashgabat,Turkmenistan,Asia/Ashgabat,16.29,2005-01 to 2012-12,Country mean monthly land temperature,TM,Asia/Ashgabat,Berkeley Earth monthly country temperature data,countryinfo
+Cockburn Town,Turks And Caicas Islands,America/Grand_Turk,27.44,2005-01 to 2012-12,Country mean monthly land temperature,TC,America/Grand_Turk,Berkeley Earth monthly country temperature data,manual
+Kampala,Uganda,Africa/Kampala,23.79,2005-01 to 2012-12,Country mean monthly land temperature,UG,Africa/Kampala,Berkeley Earth monthly country temperature data,countryinfo
+Kiev,Ukraine,Europe/Simferopol,9.24,2005-01 to 2012-12,Country mean monthly land temperature,UA,Europe/Simferopol | Europe/Kyiv,Berkeley Earth monthly country temperature data,countryinfo
+Abu Dhabi,United Arab Emirates,Asia/Dubai,29.16,2005-01 to 2012-12,Country mean monthly land temperature,AE,Asia/Dubai,Berkeley Earth monthly country temperature data,countryinfo
+London,United Kingdom,Europe/London,9.44,2005-01 to 2012-12,Country mean monthly land temperature,GB,Europe/London,Berkeley Earth monthly country temperature data,countryinfo
+Washington D.C.,United States,America/New_York,9.64,2005-01 to 2012-12,Country mean monthly land temperature,US,America/New_York | America/Detroit | America/Kentucky/Louisville | America/Kentucky/Monticello | America/Indiana/Indianapolis | America/Indiana/Vincennes | America/Indiana/Winamac | America/Indiana/Marengo | America/Indiana/Petersburg | America/Indiana/Vevay | America/Chicago | America/Indiana/Tell_City | America/Indiana/Knox | America/Menominee | America/North_Dakota/Center | America/North_Dakota/New_Salem | America/North_Dakota/Beulah | America/Denver | America/Boise | America/Phoenix | America/Los_Angeles | America/Anchorage | America/Juneau | America/Sitka | America/Metlakatla | America/Yakutat | America/Nome | America/Adak | Pacific/Honolulu,Berkeley Earth monthly country temperature data,countryinfo
+Montevideo,Uruguay,America/Montevideo,18.04,2005-01 to 2012-12,Country mean monthly land temperature,UY,America/Montevideo,Berkeley Earth monthly country temperature data,countryinfo
+Tashkent,Uzbekistan,Asia/Samarkand,13.67,2005-01 to 2012-12,Country mean monthly land temperature,UZ,Asia/Samarkand | Asia/Tashkent,Berkeley Earth monthly country temperature data,countryinfo
+Caracas,Venezuela,America/Caracas,25.87,2005-01 to 2012-12,Country mean monthly land temperature,VE,America/Caracas,Berkeley Earth monthly country temperature data,countryinfo
+Hanoi,Vietnam,Asia/Ho_Chi_Minh,24.33,2005-01 to 2012-12,Country mean monthly land temperature,VN,Asia/Ho_Chi_Minh,Berkeley Earth monthly country temperature data,countryinfo
+Charlotte Amalie,Virgin Islands,America/St_Thomas,27.32,2005-01 to 2012-12,Country mean monthly land temperature,VI,America/St_Thomas,Berkeley Earth monthly country temperature data,manual
+El Aaiún,Western Sahara,Africa/El_Aaiun,23.45,2005-01 to 2012-12,Country mean monthly land temperature,EH,Africa/El_Aaiun,Berkeley Earth monthly country temperature data,countryinfo
+Sana'a,Yemen,Asia/Aden,27.25,2005-01 to 2012-12,Country mean monthly land temperature,YE,Asia/Aden,Berkeley Earth monthly country temperature data,countryinfo
+Lusaka,Zambia,Africa/Lusaka,21.92,2005-01 to 2012-12,Country mean monthly land temperature,ZM,Africa/Lusaka,Berkeley Earth monthly country temperature data,countryinfo
+Harare,Zimbabwe,Africa/Harare,21.72,2005-01 to 2012-12,Country mean monthly land temperature,ZW,Africa/Harare,Berkeley Earth monthly country temperature data,countryinfo
+Mariehamn,Åland,Europe/Mariehamn,6.62,2005-01 to 2012-12,Country mean monthly land temperature,AX,Europe/Mariehamn,Berkeley Earth monthly country temperature data,manual
