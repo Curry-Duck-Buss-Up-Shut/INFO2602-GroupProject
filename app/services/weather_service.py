@@ -104,36 +104,84 @@ class WeatherService:
 
     async def get_current_weather(self, latitude: float, longitude: float, timezone: str = "auto") -> dict[str, Any]:
         settings = get_settings()
+        normalized_location = self._normalize_weather_location(latitude, longitude, timezone)
         try:
-            normalized_timezone = timezone or "auto"
             data = await self._get_or_fetch_json(
-                cache_key=(
-                    f"weather-current:{round(latitude, 4)}:{round(longitude, 4)}:{normalized_timezone.lower()}"
-                ),
+                cache_key=self._build_current_weather_cache_key(**normalized_location),
                 ttl_seconds=settings.weather_cache_ttl_seconds,
                 stale_ttl_seconds=settings.weather_stale_ttl_seconds,
-                fetcher=lambda: self._fetch_live_current_weather(latitude, longitude, normalized_timezone),
+                fetcher=lambda: self._fetch_live_current_weather(**normalized_location),
             )
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code == 429:
                 raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
             raise
-        current = data.get("current", {})
-        return {
-            "latitude": data.get("latitude"),
-            "longitude": data.get("longitude"),
-            "timezone": data.get("timezone"),
-            "timezone_abbreviation": data.get("timezone_abbreviation"),
-            "local_time": current.get("time"),
-            "temperature": current.get("temperature_2m"),
-            "apparent_temperature": current.get("apparent_temperature"),
-            "humidity": current.get("relative_humidity_2m"),
-            "wind_speed": current.get("wind_speed_10m"),
-            "precipitation": current.get("precipitation"),
-            "is_day": bool(current.get("is_day", 1)),
-            "weather_code": current.get("weather_code"),
-            "weather_label": WEATHER_CODE_LABELS.get(current.get("weather_code"), "Unknown"),
-        }
+        return self._format_current_weather_payload(data)
+
+    async def get_current_weather_batch(self, locations: list[dict[str, Any]]) -> list[dict[str, Any] | None]:
+        if not locations:
+            return []
+
+        settings = get_settings()
+        normalized_locations = [
+            self._normalize_weather_location(
+                location["latitude"],
+                location["longitude"],
+                location.get("timezone", "auto"),
+            )
+            for location in locations
+        ]
+        now = time.monotonic()
+        results: list[dict[str, Any] | None] = [None] * len(normalized_locations)
+        stale_entries: dict[int, CacheEntry] = {}
+        uncached_locations: list[dict[str, Any]] = []
+        uncached_indices: list[int] = []
+
+        for index, location in enumerate(normalized_locations):
+            cache_key = self._build_current_weather_cache_key(**location)
+            cached_entry = self._get_cache_entry(cache_key)
+            if cached_entry and cached_entry.expires_at > now:
+                results[index] = self._format_current_weather_payload(cached_entry.value)
+                continue
+            if cached_entry and cached_entry.stale_until > now:
+                stale_entries[index] = cached_entry
+            uncached_locations.append(location)
+            uncached_indices.append(index)
+
+        if not uncached_locations:
+            return results
+
+        try:
+            payloads = await self._fetch_live_current_weather_batch(uncached_locations)
+        except httpx.HTTPStatusError as exc:
+            self._apply_stale_batch_results(results, stale_entries, uncached_indices)
+            if exc.response.status_code == 429 and not any(result is not None for result in results):
+                raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
+            if any(result is not None for result in results):
+                return results
+            raise
+        except Exception:
+            self._apply_stale_batch_results(results, stale_entries, uncached_indices)
+            if any(result is not None for result in results):
+                return results
+            raise
+
+        expires_at = time.monotonic() + settings.weather_cache_ttl_seconds
+        stale_until = expires_at + settings.weather_stale_ttl_seconds
+
+        for offset, result_index in enumerate(uncached_indices):
+            payload = payloads[offset] if offset < len(payloads) else None
+            if isinstance(payload, dict):
+                cache_key = self._build_current_weather_cache_key(**normalized_locations[result_index])
+                self._set_cache_entry(cache_key, payload, expires_at=expires_at, stale_until=stale_until)
+                results[result_index] = self._format_current_weather_payload(payload)
+                continue
+
+            stale_entry = stale_entries.get(result_index)
+            if stale_entry:
+                results[result_index] = self._format_current_weather_payload(stale_entry.value)
+
+        return results
 
     async def get_forecast(self, latitude: float, longitude: float, timezone: str = "auto") -> dict[str, Any]:
         normalized_latitude = round(latitude, 4)
@@ -262,6 +310,46 @@ class WeatherService:
             and settings.caribbean_lon_min <= longitude <= settings.caribbean_lon_max
         )
 
+    def _normalize_weather_location(self, latitude: float, longitude: float, timezone: str | None) -> dict[str, Any]:
+        return {
+            "latitude": round(float(latitude), 4),
+            "longitude": round(float(longitude), 4),
+            "timezone": (timezone or "auto").strip() or "auto",
+        }
+
+    def _build_current_weather_cache_key(self, latitude: float, longitude: float, timezone: str) -> str:
+        return f"weather-current:{latitude}:{longitude}:{timezone.lower()}"
+
+    def _format_current_weather_payload(self, data: dict[str, Any]) -> dict[str, Any]:
+        current = data.get("current", {})
+        weather_code = current.get("weather_code")
+        return {
+            "latitude": data.get("latitude"),
+            "longitude": data.get("longitude"),
+            "timezone": data.get("timezone"),
+            "timezone_abbreviation": data.get("timezone_abbreviation"),
+            "local_time": current.get("time"),
+            "temperature": current.get("temperature_2m"),
+            "apparent_temperature": current.get("apparent_temperature"),
+            "humidity": current.get("relative_humidity_2m"),
+            "wind_speed": current.get("wind_speed_10m"),
+            "precipitation": current.get("precipitation"),
+            "is_day": bool(current.get("is_day", 1)),
+            "weather_code": weather_code,
+            "weather_label": WEATHER_CODE_LABELS.get(weather_code, "Unknown"),
+        }
+
+    def _apply_stale_batch_results(
+        self,
+        results: list[dict[str, Any] | None],
+        stale_entries: dict[int, CacheEntry],
+        indices: list[int],
+    ) -> None:
+        for index in indices:
+            stale_entry = stale_entries.get(index)
+            if stale_entry:
+                results[index] = self._format_current_weather_payload(stale_entry.value)
+
     async def _fetch_live_current_weather(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
         settings = get_settings()
         normalized_timezone = timezone or "auto"
@@ -284,6 +372,33 @@ class WeatherService:
                 ),
             },
         )
+
+    async def _fetch_live_current_weather_batch(self, locations: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        settings = get_settings()
+        payload = await self._request_json(
+            settings.open_meteo_forecast_url,
+            params={
+                "latitude": ",".join(str(location["latitude"]) for location in locations),
+                "longitude": ",".join(str(location["longitude"]) for location in locations),
+                "timezone": ",".join(location["timezone"] for location in locations),
+                "current": ",".join(
+                    [
+                        "temperature_2m",
+                        "relative_humidity_2m",
+                        "apparent_temperature",
+                        "is_day",
+                        "precipitation",
+                        "weather_code",
+                        "wind_speed_10m",
+                    ]
+                ),
+            },
+        )
+        if isinstance(payload, list):
+            return payload
+        if isinstance(payload, dict):
+            return [payload]
+        return []
 
     async def _fetch_live_forecast(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
         settings = get_settings()

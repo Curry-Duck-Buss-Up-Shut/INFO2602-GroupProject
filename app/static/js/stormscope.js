@@ -491,37 +491,33 @@ const StormScopeApp = (() => {
         const countdownLabel = document.getElementById("weatherGameCountdownLabel");
         if (!timer && !revealTimer && !countdownCard && !countdownValue && !countdownLabel) return;
 
-        const defaultCountdownSeconds = String(Math.floor(WEATHER_GAME_NEXT_ROUND_DELAY_MS / 1000));
-        let text = `Next round countdown is ${defaultCountdownSeconds}s once you lock in a guess.`;
+        let text = "Start a duel when you want a fresh live comparison.";
         let active = false;
-        let countdownDisplay = defaultCountdownSeconds;
-        let countdownMeta = "seconds after your guess";
+        let countdownDisplay = "--";
+        let countdownMeta = "manual start";
 
         if (state.weatherGame.loading) {
             text = "Preparing the next duel now...";
             active = true;
             countdownDisplay = "0";
-            countdownMeta = "loading next duel";
-        } else if (state.weatherGame.nextRoundStartsAt) {
-            const remainingSeconds = Math.max(0, Math.ceil((state.weatherGame.nextRoundStartsAt - Date.now()) / 1000));
-            text = `Next round starts in ${remainingSeconds}s.`;
-            active = true;
-            countdownDisplay = String(remainingSeconds);
-            countdownMeta = "seconds";
+            countdownMeta = "loading duel";
         } else if (state.weatherGame.currentRound?.resolved) {
-            text = "Next round will start automatically.";
-            active = true;
-            countdownDisplay = "0";
-            countdownMeta = "starting next round";
+            text = "Round finished. Click New Duel for another comparison.";
         } else if (state.weatherGame.currentRound) {
-            text = "Make your pick to start the countdown.";
+            text = "Make your pick to finish this duel.";
+            countdownDisplay = "1";
+            countdownMeta = "active duel";
         }
 
         if (timer) {
             timer.textContent = text;
             timer.classList.toggle("active", active);
         }
-        if (revealTimer) revealTimer.textContent = text.replace("Next round ", "");
+        if (revealTimer) {
+            revealTimer.textContent = state.weatherGame.currentRound?.resolved
+                ? "Click New Duel when you're ready."
+                : text;
+        }
         if (countdownValue) countdownValue.textContent = countdownDisplay;
         if (countdownLabel) countdownLabel.textContent = countdownMeta;
         if (countdownCard) countdownCard.classList.toggle("active", active);
@@ -564,8 +560,8 @@ const StormScopeApp = (() => {
     async function buildWeatherGameRound() {
         for (let attempt = 0; attempt < 5; attempt += 1) {
             const cities = pickWeatherGameCities();
-            const weather = await Promise.all(cities.map((city) => loadCurrentWeather(city)));
-            const temperatures = weather.map((entry) => Number(entry.temperature));
+            const weather = await loadCurrentWeatherBatch(cities);
+            const temperatures = weather.map((entry) => Number(entry?.temperature));
             if (temperatures.every((value) => Number.isFinite(value))) {
                 const hotterIndex = temperatures[0] >= temperatures[1] ? 0 : 1;
                 if (Math.abs(temperatures[0] - temperatures[1]) >= 1 || attempt === 4) {
@@ -650,7 +646,7 @@ const StormScopeApp = (() => {
                         ${renderWeatherLabel(round.weather[coolerIndex])}
                     </strong>
                 </div>
-                ${renderDataLine("Next round", `<span id="weatherGameRevealTimer">starts soon.</span>`)}
+                ${renderDataLine("Next duel", `<span id="weatherGameRevealTimer">Click New Duel when you're ready.</span>`)}
             </div>
         `;
         renderWeatherGameTimer();
@@ -698,7 +694,8 @@ const StormScopeApp = (() => {
         persistWeatherGameStats();
         renderWeatherGameStats();
         renderWeatherGameRound();
-        scheduleWeatherGameNextRound();
+        clearWeatherGameCountdown();
+        renderWeatherGameTimer();
     }
 
     function setGlobeFocus(title, copy, meta) {
@@ -995,6 +992,47 @@ const StormScopeApp = (() => {
         return response;
     }
 
+    async function loadCurrentWeatherBatch(cities, options = {}) {
+        const results = new Array(cities.length).fill(null);
+        const uncachedCities = [];
+        const uncachedIndices = [];
+
+        cities.forEach((city, index) => {
+            const cacheKey = buildWeatherCacheKey(city);
+            if (cacheKey && !options.forceRefresh) {
+                const cached = readWeatherCache(weatherResponseCache.current, cacheKey, WEATHER_CURRENT_CACHE_TTL_MS);
+                if (cached) {
+                    results[index] = cached;
+                    return;
+                }
+            }
+
+            uncachedCities.push({
+                latitude: city.latitude,
+                longitude: city.longitude,
+                timezone: city.timezone || "auto",
+            });
+            uncachedIndices.push(index);
+        });
+
+        if (!uncachedCities.length) return results;
+
+        const response = await api("/api/weather/current/batch", {
+            method: "POST",
+            body: JSON.stringify({ locations: uncachedCities }),
+        });
+        const batchedResults = Array.isArray(response?.results) ? response.results : [];
+
+        uncachedIndices.forEach((resultIndex, offset) => {
+            const weather = batchedResults[offset] || null;
+            results[resultIndex] = weather;
+            const cacheKey = buildWeatherCacheKey(cities[resultIndex]);
+            if (cacheKey && weather) writeWeatherCache(weatherResponseCache.current, cacheKey, weather);
+        });
+
+        return results;
+    }
+
     async function loadForecast(city, options = {}) {
         const cacheKey = buildWeatherCacheKey(city);
         if (cacheKey && !options.forceRefresh) {
@@ -1239,13 +1277,16 @@ const StormScopeApp = (() => {
         const hiddenCityCount = Math.max(0, state.watchlist.length - cities.length);
         const hasInlineWeatherDetails = Boolean(document.getElementById("currentWeatherPanel") && document.getElementById("forecastGrid"));
         const canOpenWeatherDetails = hasInlineWeatherDetails || window.location.pathname === "/app";
-        const snapshotResults = await Promise.allSettled(
-            cities.map((city) => loadCurrentWeather({ latitude: city.latitude, longitude: city.longitude, timezone: city.timezone }))
-        );
+        let snapshotResults = [];
+        try {
+            snapshotResults = await loadCurrentWeatherBatch(cities);
+        } catch (error) {
+            snapshotResults = cities.map(() => null);
+        }
         const successfulSnapshots = [];
-        const weatherCards = snapshotResults.map((result, index) => {
+        const weatherCards = snapshotResults.map((weather, index) => {
             const city = cities[index];
-            if (result.status !== "fulfilled") {
+            if (!weather) {
                 return `
                     <article class="storm-card">
                         <div class="weather-snapshot-header">
@@ -1263,29 +1304,28 @@ const StormScopeApp = (() => {
                 `;
             }
 
-            const weather = result.value;
             const snapshotIndex = successfulSnapshots.length;
             successfulSnapshots.push(city);
-                const interactionAttrs = canOpenWeatherDetails
-                    ? ` class="storm-card watchlist-snapshot-card" data-snapshot-index="${snapshotIndex}" role="button" tabindex="0"`
-                    : ` class="storm-card"`;
-                return `
-                    <article${interactionAttrs}>
-                        <div class="weather-snapshot-header">
-                            <div>
-                                <div class="eyebrow">Priority ${city.priority}</div>
-                                <h4>${city.nickname || city.city_name}</h4>
-                                <div class="weather-snapshot-location">${city.city_name}, ${city.country_name}</div>
-                            </div>
-                            ${renderWeatherIcon(weather.weather_code, weather.is_day, "weather-icon-badge weather-icon-badge-compact")}
+            const interactionAttrs = canOpenWeatherDetails
+                ? ` class="storm-card watchlist-snapshot-card" data-snapshot-index="${snapshotIndex}" role="button" tabindex="0"`
+                : ` class="storm-card"`;
+            return `
+                <article${interactionAttrs}>
+                    <div class="weather-snapshot-header">
+                        <div>
+                            <div class="eyebrow">Priority ${city.priority}</div>
+                            <h4>${city.nickname || city.city_name}</h4>
+                            <div class="weather-snapshot-location">${city.city_name}, ${city.country_name}</div>
                         </div>
-                        <div class="metric-value">${Math.round(weather.temperature)}°C</div>
-                        ${renderDataLine("Condition", renderWeatherLabel(weather), null)}
-                        ${renderDataLine("Local time", weather.local_time || "Unavailable", weather.is_day ? "fa-solid fa-sun" : "fa-solid fa-moon")}
-                    </article>
-                `;
+                        ${renderWeatherIcon(weather.weather_code, weather.is_day, "weather-icon-badge weather-icon-badge-compact")}
+                    </div>
+                    <div class="metric-value">${Math.round(weather.temperature)}°C</div>
+                    ${renderDataLine("Condition", renderWeatherLabel(weather), null)}
+                    ${renderDataLine("Local time", weather.local_time || "Unavailable", weather.is_day ? "fa-solid fa-sun" : "fa-solid fa-moon")}
+                </article>
+            `;
         });
-        if (!successfulSnapshots.length && snapshotResults.length) {
+        if (!successfulSnapshots.length && cities.length) {
             container.innerHTML = `<div class="empty-state">Saved cities loaded, but the live weather snapshots could not be refreshed.</div>`;
             return;
         }
@@ -1294,45 +1334,45 @@ const StormScopeApp = (() => {
             ? `<div class="empty-state">Showing live weather for your top ${cities.length} saved cities to keep requests lighter.</div>`
             : "";
         container.innerHTML = `${weatherCards.join("")}${snapshotNote}`;
-            if (canOpenWeatherDetails) {
-                const openSnapshotWeather = async (snapshotIndex) => {
-                    const city = successfulSnapshots[snapshotIndex];
-                    if (!city) return;
-                    const normalizedCity = normalizeExplorerCity({
-                        name: city.city_name,
-                        country: city.country_name,
-                        latitude: city.latitude,
-                        longitude: city.longitude,
-                        timezone: city.timezone,
-                    });
-                    if (!normalizedCity) return;
-
-                    if (hasInlineWeatherDetails) {
-                        await selectCity(normalizedCity);
-                        document.getElementById("currentWeatherPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        return;
-                    }
-
-                    queuePendingExplorerCity(normalizedCity);
-                    window.location.href = "/app/explorer#currentWeatherPanel";
-                };
-
-                container.querySelectorAll("[data-snapshot-index]").forEach((card) => {
-                    card.addEventListener("click", async () => {
-                        const snapshotIndex = Number(card.dataset.snapshotIndex);
-                        if (Number.isNaN(snapshotIndex)) return;
-                        await openSnapshotWeather(snapshotIndex);
-                    });
-
-                    card.addEventListener("keydown", async (event) => {
-                        if (event.key !== "Enter" && event.key !== " ") return;
-                        event.preventDefault();
-                        const snapshotIndex = Number(card.dataset.snapshotIndex);
-                        if (Number.isNaN(snapshotIndex)) return;
-                        await openSnapshotWeather(snapshotIndex);
-                    });
+        if (canOpenWeatherDetails) {
+            const openSnapshotWeather = async (snapshotIndex) => {
+                const city = successfulSnapshots[snapshotIndex];
+                if (!city) return;
+                const normalizedCity = normalizeExplorerCity({
+                    name: city.city_name,
+                    country: city.country_name,
+                    latitude: city.latitude,
+                    longitude: city.longitude,
+                    timezone: city.timezone,
                 });
-            }
+                if (!normalizedCity) return;
+
+                if (hasInlineWeatherDetails) {
+                    await selectCity(normalizedCity);
+                    document.getElementById("currentWeatherPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    return;
+                }
+
+                queuePendingExplorerCity(normalizedCity);
+                window.location.href = "/app/explorer#currentWeatherPanel";
+            };
+
+            container.querySelectorAll("[data-snapshot-index]").forEach((card) => {
+                card.addEventListener("click", async () => {
+                    const snapshotIndex = Number(card.dataset.snapshotIndex);
+                    if (Number.isNaN(snapshotIndex)) return;
+                    await openSnapshotWeather(snapshotIndex);
+                });
+
+                card.addEventListener("keydown", async (event) => {
+                    if (event.key !== "Enter" && event.key !== " ") return;
+                    event.preventDefault();
+                    const snapshotIndex = Number(card.dataset.snapshotIndex);
+                    if (Number.isNaN(snapshotIndex)) return;
+                    await openSnapshotWeather(snapshotIndex);
+                });
+            });
+        }
     }
 
     async function loadWatchlist() {

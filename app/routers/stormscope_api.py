@@ -7,6 +7,7 @@ from app.repositories.saved_location import SavedLocationRepository
 from app.repositories.user import UserRepository
 from app.repositories.weather_forecast_snapshot import WeatherForecastSnapshotRepository
 from app.schemas.disaster import DisasterEventCreate, DisasterEventResponse, DisasterEventUpdate, DisasterImportResponse
+from app.schemas.weather import WeatherCurrentBatchRequest
 from app.schemas.user import UserAdminUpdate, UserDeleteRequest, UserResponse, UserSelfUpdate
 from app.schemas.watchlist import SavedLocationCreate, SavedLocationResponse, SavedLocationUpdate
 from app.services.disaster_service import DisasterService
@@ -137,6 +138,31 @@ async def weather_current(
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Current weather lookup failed right now. Please try again shortly.",
+        )
+
+
+@api_router.post("/weather/current/batch")
+async def weather_current_batch(payload: WeatherCurrentBatchRequest):
+    service = WeatherService()
+    try:
+        return {
+            "results": await service.get_current_weather_batch(
+                [
+                    {
+                        "latitude": location.latitude,
+                        "longitude": location.longitude,
+                        "timezone": location.timezone,
+                    }
+                    for location in payload.locations
+                ]
+            )
+        }
+    except UpstreamRateLimitError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Current weather snapshots failed right now. Please try again shortly.",
         )
 
 
