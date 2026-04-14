@@ -1063,7 +1063,7 @@ const StormScopeApp = (() => {
                 ${renderDataLine("Humidity", `${weather.humidity}%`, "fa-solid fa-droplet")}
                 ${renderDataLine("Wind", `${weather.wind_speed} km/h`, "fa-solid fa-wind")}
                 ${renderDataLine("Precipitation", `${weather.precipitation} mm`, "fa-solid fa-cloud-rain")}
-                ${renderDataLine("Local time", weather.local_time || "Unavailable", weather.is_day ? "fa-solid fa-sun" : "fa-solid fa-moon")}
+                ${renderDataLine("Local time", weather.local_time ? formatDateTime(weather.local_time) : "Unavailable", weather.is_day ? "fa-solid fa-sun" : "fa-solid fa-moon")}
             </div>
         `;
     }
@@ -1087,7 +1087,6 @@ const StormScopeApp = (() => {
                 </div>
                 ${renderDataLine("High", `${Math.round(day.temperature_max)}°C`, "fa-solid fa-temperature-high")}
                 ${renderDataLine("Low", `${Math.round(day.temperature_min)}°C`, "fa-solid fa-temperature-low")}
-                ${renderDataLine("Rain chance", `${day.precipitation_probability ?? 0}%`, "fa-solid fa-cloud-rain")}
             </article>
         `).join("");
     }
