@@ -14,7 +14,7 @@ async def logout(request: Request):
     response.delete_cookie(
         key="access_token", 
         httponly=True,
-        samesite="none",
-        secure=True
+        samesite=get_settings().cookie_samesite,
+        secure=get_settings().cookie_secure
     )
     return response
