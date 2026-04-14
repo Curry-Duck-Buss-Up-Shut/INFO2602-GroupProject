@@ -1,127 +1,139 @@
 {% extends "base.html" %}
 
-{% block internal_css %}
-
-<style>
-    body {
-        overflow-x: hidden;
-        background-color: #f8f9fa;
-    }
-
-    #wrapper {
-        display: flex;
-    }
-
-    #sidebar {
-        min-width: 250px;
-        max-width: 250px;
-        min-height: 100vh;
-        transition: all 0.3s;
-        background: #1b263b;
-        color: #fff;
-    }
-
-    #sidebar.collapsed {
-        margin-left: -250px;
-    }
-
-    #sidebar .nav-link {
-        color: #adb5bd;
-        font-weight: 500;
-    }
-
-    #sidebar .nav-link:hover,
-    #sidebar .nav-link.active {
-        color: #fff;
-        background-color: #415a77;
-        border-radius: 0.5rem;
-    }
-
-    #content {
-        width: 100%;
-        padding: 1rem;
-        transition: all 0.3s;
-        display: flex;
-        flex-direction: column;
-        background-color: #f8f9fa;
-    }
-
-    .card {
-        border: none;
-        border-radius: 1rem;
-    }
-
-    .summary-card {
-        border-left: 5px solid #0d6efd;
-    }
-
-    .navbar {
-        border-bottom: 1px solid #dee2e6;
-    }
-</style>
-
-{% block additional_styles %}{% endblock %}
-
-{% endblock %}
-
+{% block body_class %}stormscope-shell{% endblock %}
 
 {% block content %}
-<div id="wrapper">
-
-    <nav id="sidebar" class="p-3 d-flex flex-column vh-100">
-        <h4 class="text-white mb-4 text-center py-4">Project Template</h4>
-
-        <ul class="nav nav-pills flex-column gap-2 flex-grow-1">
-            <li class="nav-item">
-                <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/app' }}" href="/app">
-                    <span class="material-symbols-outlined me-2">people</span>
-                    Users
-                </a>
-            </li>
-            
-            <li class="nav-item mt-auto">
-                <a class="nav-link d-flex align-items-center text-danger" href="/logout">
-                    <span class="material-symbols-outlined me-2">logout</span>
-                    Logout
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <div id="content">
-        <nav class="navbar navbar-expand-lg bg-white mb-4 px-3 rounded-3 shadow-sm">
-            <button class="btn btn-outline-secondary" id="menu-toggle">
-                <span class="material-symbols-outlined md-dark">menu</span>
-            </button>
-
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <span class="fw-semibold">Welcome, {{user.username}}</span>
+<div class="stormscope-layout">
+    <input type="hidden" id="currentSessionUserId" value="{{ user.id }}">
+    <input type="hidden" id="currentSessionUsername" value="{{ user.username }}">
+    <input type="hidden" id="currentSessionUserRole" value="{{ user.role }}">
+    <aside id="stormscopeSidebar" class="stormscope-sidebar" aria-label="Primary navigation">
+        <div class="stormscope-sidebar-main">
+            <div class="stormscope-brand-card">
+                <div class="stormscope-sidebar-brand-row">
+                    <button
+                        id="stormscopeLogoTrigger"
+                        class="stormscope-brand stormscope-brand-logo-lockup stormscope-brand-trigger"
+                        type="button"
+                        aria-label="Open StormScope logo preview"
+                        aria-haspopup="dialog"
+                        aria-controls="stormscopeLogoModal"
+                        aria-expanded="false"
+                    >
+                        <img class="stormscope-brand-logo" src="{{ url_for('static', path='img/stormscope-logo.png') }}" alt="StormScope logo">
+                        <div class="stormscope-brand-copy">
+                            <div class="stormscope-brand-subtitle">Weather and disaster awareness platform</div>
+                        </div>
+                    </button>
+                    <button id="mobileNavClose" class="stormscope-sidebar-close" type="button" aria-label="Close navigation">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
             </div>
-        </nav>
-        
-        <div class="row">
-            <div class="col-12">
-                {% for message in get_flashed_messages(request) %}
-                    <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
-                {% endfor %}
-            </div>
+            <nav id="stormscopeSidebarNav" class="stormscope-sidebar-nav d-flex flex-column">
+                <a class="stormscope-sidebar-link d-flex align-items-center w-100 text-decoration-none {{ 'active' if request.path == '/app' else '' }}" href="/app">
+                    <span class="material-symbols-outlined stormscope-link-icon">home</span>
+                    <span class="stormscope-link-copy">
+                        <span class="stormscope-link-label">Home</span>
+                        <span class="stormscope-link-meta">Dashboard and live overview</span>
+                    </span>
+                </a>
+                <a class="stormscope-sidebar-link d-flex align-items-center w-100 text-decoration-none {{ 'active' if request.path == '/app/explorer' else '' }}" href="/app/explorer">
+                    <span class="material-symbols-outlined stormscope-link-icon">travel_explore</span>
+                    <span class="stormscope-link-copy">
+                        <span class="stormscope-link-label">Explorer</span>
+                        <span class="stormscope-link-meta">Search places on the map</span>
+                    </span>
+                </a>
+                <a class="stormscope-sidebar-link d-flex align-items-center w-100 text-decoration-none {{ 'active' if request.path == '/app/game' else '' }}" href="/app/game">
+                    <span class="material-symbols-outlined stormscope-link-icon">stadia_controller</span>
+                    <span class="stormscope-link-copy">
+                        <span class="stormscope-link-label">Mini Game</span>
+                        <span class="stormscope-link-meta">Play Hot or Cold Duel</span>
+                    </span>
+                </a>
+                <a class="stormscope-sidebar-link d-flex align-items-center w-100 text-decoration-none {{ 'active' if request.path == '/app/timeline' else '' }}" href="/app/timeline">
+                    <span class="material-symbols-outlined stormscope-link-icon">warning</span>
+                    <span class="stormscope-link-copy">
+                        <span class="stormscope-link-label">Timeline</span>
+                        <span class="stormscope-link-meta">Browse stored NASA-backed records</span>
+                    </span>
+                </a>
+                <a class="stormscope-sidebar-link d-flex align-items-center w-100 text-decoration-none {{ 'active' if request.path == '/app/profile' else '' }}" href="/app/profile">
+                    <span class="material-symbols-outlined stormscope-link-icon">manage_accounts</span>
+                    <span class="stormscope-link-copy">
+                        <span class="stormscope-link-label">Profile</span>
+                        <span class="stormscope-link-meta">Account settings and security</span>
+                    </span>
+                </a>
+                {% if user.role == "admin" %}
+                <a class="stormscope-sidebar-link d-flex align-items-center w-100 text-decoration-none {{ 'active' if request.path == '/admin' else '' }}" href="/admin">
+                    <span class="material-symbols-outlined stormscope-link-icon">shield</span>
+                    <span class="stormscope-link-copy">
+                        <span class="stormscope-link-label">Admin</span>
+                        <span class="stormscope-link-meta">Protected management tools</span>
+                    </span>
+                </a>
+                {% endif %}
+            </nav>
         </div>
 
+        <div class="stormscope-sidebar-footer d-flex flex-column">
+            <a
+                class="stormscope-user-chip {{ 'active' if request.path == '/app/profile' else '' }}"
+                href="/app/profile"
+                aria-label="Open profile page"
+            >
+                <span class="material-symbols-outlined">person</span>
+                <div>
+                    <div id="currentSessionDisplayName" class="fw-semibold">{{ user.username }}</div>
+                    <small id="currentSessionDisplayRole" class="text-uppercase">{{ user.role.replace('_', ' ') }}</small>
+                </div>
+            </a>
+            <a class="stormscope-sidebar-link d-flex align-items-center w-100 text-decoration-none logout-link" href="/logout">
+                <span class="material-symbols-outlined stormscope-link-icon">logout</span>
+                <span class="stormscope-link-copy">
+                    <span class="stormscope-link-label">Logout</span>
+                    <span class="stormscope-link-meta">End this session</span>
+                </span>
+            </a>
+        </div>
+    </aside>
+
+    <button id="mobileNavBackdrop" class="stormscope-sidebar-backdrop" type="button" aria-label="Close navigation"></button>
+
+    <main class="stormscope-main">
+        <div class="stormscope-topbar">
+            <div class="stormscope-topbar-main">
+                <button id="mobileNavToggle" class="stormscope-mobile-nav-toggle" type="button" aria-label="Open navigation" aria-controls="stormscopeSidebar" aria-expanded="false">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <div>
+                <h1 class="page-title">{% block page_title %}StormScope{% endblock %}</h1>
+                </div>
+            </div>
+            <div class="stormscope-role-badge">{{ user.role.replace('_', ' ') }}</div>
+        </div>
+
+        {% for message in get_flashed_messages(request) %}
+            <div class="alert alert-{{ message.type }} stormscope-alert" role="alert">{{ message.message }}</div>
+        {% endfor %}
 
         {% block subpage_content %}{% endblock %}
-
-    </div>
-
-
+    </main>
 </div>
 
-
-<script>
-    document.getElementById("menu-toggle").addEventListener("click", function () {
-        document.getElementById("sidebar").classList.toggle("collapsed");
-    });
-</script>
+<div id="stormscopeLogoModal" class="stormscope-logo-modal" role="dialog" aria-modal="true" aria-labelledby="stormscopeLogoModalTitle" aria-hidden="true" hidden>
+    <div class="stormscope-logo-modal-dialog">
+        <button id="stormscopeLogoModalClose" class="stormscope-logo-modal-close" type="button" aria-label="Close logo preview">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <div class="stormscope-logo-modal-panel">
+            <h2 id="stormscopeLogoModalTitle" class="visually-hidden">StormScope logo preview</h2>
+            <img class="stormscope-logo-modal-image" src="{{ url_for('static', path='img/stormscope-logo.png') }}" alt="StormScope logo">
+        </div>
+    </div>
+</div>
 
 {% block subpage_scripts %}{% endblock %}
-
 {% endblock %}

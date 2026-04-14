@@ -1,0 +1,158 @@
+{% extends "stormscope-page.html" %}
+
+{% block title %}StormScope Explorer{% endblock %}
+{% block page_title %}Weather Explorer{% endblock %}
+
+{% block external_css %}
+{{ super() }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+{% endblock %}
+
+{% block external_js %}
+<script src="https://unpkg.com/globe.gl"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+{{ super() }}
+{% endblock %}
+
+{% block stormscope_page_content %}
+<section class="hero-panel" id="explorer">
+    <div class="hero-copy">
+        <div class="eyebrow">Weather explorer</div>
+        <h2>Explore the globe through live weather, forecasts, and saved places</h2>
+        <p>
+            Search the globe, open detailed conditions, and build a personal watchlist around the places you care about most.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-storm-primary" href="/app">Back to dashboard</a>
+            <a class="btn btn-storm-secondary" href="/app/timeline">Open timeline</a>
+            <a class="btn btn-storm-secondary" href="/app/game">Open mini game</a>
+        </div>
+    </div>
+    <div class="hero-metrics">
+        <article class="metric-card">
+            <div class="metric-label">Tracked cities</div>
+            <div class="metric-value" id="metricWatchlistCount">0</div>
+            <small>Saved in your personal watchlist</small>
+        </article>
+    </div>
+</section>
+
+<section class="map-hero-shell">
+    <div class="map-hero-header">
+        <div>
+            <div class="eyebrow">Map search</div>
+            <h3>Search countries or cities, then let the globe take over the page.</h3>
+        </div>
+    </div>
+
+    <div class="map-stage">
+        <form id="weatherSearchForm" class="floating-search-form">
+            <label class="visually-hidden" for="citySearch">Search countries or cities</label>
+            <div class="floating-search-inner">
+                <span class="material-symbols-outlined">search</span>
+                <input class="form-control storm-input floating-search-input" id="citySearch" name="citySearch" placeholder="Search countries or cities..." required>
+                <button class="btn btn-storm-primary floating-search-button" type="submit">Search</button>
+            </div>
+        </form>
+        <div id="searchResults" class="search-results floating-results"></div>
+        <div class="globe-stage-shell hero-map">
+            <div id="weatherGlobe" class="weather-globe"></div>
+            <div class="globe-overlay-panel">
+                <div class="eyebrow">Live Earth</div>
+                <h4 id="globeFocusTitle">StormScope live globe</h4>
+                <p id="globeFocusCopy">Move between your selected place, personal watchlist, and active event markers without leaving the map.</p>
+                <div id="globeFocusMeta" class="globe-focus-meta">Saved places and live events wrapped around the globe.</div>
+                <a class="btn btn-storm-secondary globe-overlay-action" href="#detailMap">Open Detailed Map</a>
+            </div>
+            <div class="globe-legend">
+                <span><i class="legend-dot legend-dot-city"></i> Selected place</span>
+                <span><i class="legend-dot legend-dot-watchlist"></i> Saved locations</span>
+                <span><i class="legend-dot legend-dot-nasa"></i> NASA live events</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="explorer-grid">
+    <article class="storm-panel nested-panel">
+        <div class="panel-header">
+            <h4>Selected location</h4>
+        </div>
+        <div id="selectedCityCard" class="empty-state">Search for a city or country to load live weather and forecast data.</div>
+
+        <form id="saveLocationForm" class="storm-form-grid compact-grid mt-3">
+            <div>
+                <label class="form-label" for="locationNickname">Nickname</label>
+                <input class="form-control storm-input" id="locationNickname" placeholder="Optional nickname">
+            </div>
+            <div>
+                <label class="form-label" for="locationPriority">Priority</label>
+                <select class="form-select storm-input" id="locationPriority">
+                    <option value="1">1 - Critical</option>
+                    <option value="2">2 - High</option>
+                    <option value="3" selected>3 - Standard</option>
+                    <option value="4">4 - Low</option>
+                    <option value="5">5 - Background</option>
+                </select>
+            </div>
+            <div class="button-row">
+                <button class="btn btn-storm-primary" type="submit">Save location</button>
+            </div>
+        </form>
+    </article>
+
+    <article class="storm-panel nested-panel">
+        <div class="panel-header">
+            <div>
+                <h4>Detailed Map</h4>
+                <div class="eyebrow">Leaflet explorer</div>
+            </div>
+        </div>
+        <div id="detailMap" class="weather-map detail-map"></div>
+        <div id="detailMapCaption" class="detail-map-caption">Search for a city or country to open a labeled map view here.</div>
+    </article>
+</section>
+
+<section class="content-grid mt-4">
+    <article class="storm-panel nested-panel">
+        <div class="panel-header">
+            <h4>Current weather</h4>
+        </div>
+        <div id="currentWeatherPanel" class="empty-state">Current conditions will appear here after you select a location.</div>
+    </article>
+    <article class="storm-panel nested-panel">
+        <div class="panel-header">
+            <h4>7-day forecast</h4>
+        </div>
+        <div id="forecastGrid" class="forecast-grid">
+            <div class="empty-state">Forecast cards will appear here.</div>
+        </div>
+    </article>
+</section>
+
+<section class="content-grid explorer-watchlist-grid">
+    <article class="storm-panel explorer-dashboard-panel">
+        <div class="panel-header">
+            <div>
+                <div class="eyebrow">Dashboard</div>
+                <h3>Today in your tracked cities</h3>
+            </div>
+        </div>
+        <div id="watchlistSnapshot" class="weather-snapshot-grid">
+            <div class="empty-state">Save cities from the explorer to populate your weather dashboard.</div>
+        </div>
+    </article>
+
+    <article class="storm-panel explorer-watchlist-panel">
+        <div class="panel-header">
+            <div>
+                <div class="eyebrow">Watchlist</div>
+                <h3>Manage saved locations</h3>
+            </div>
+        </div>
+        <div id="watchlistContainer" class="stack-list">
+            <div class="empty-state">Your watchlist is empty right now.</div>
+        </div>
+    </article>
+</section>
+{% endblock %}

@@ -1,12 +1,126 @@
 {% extends "authenticated-base.html" %}
 
+{% block title %}StormScope Admin{% endblock %}
+{% block page_title %}Admin Management{% endblock %}
+
 {% block external_js %}
-<script src="{{ url_for('static', path='js/app.js')}}"></script>
+<script defer src="{{ url_for('static', path='js/stormscope.js')}}?v=20260413-logo-lightbox"></script>
 {% endblock %}
 
-
 {% block subpage_content %}
+<section class="hero-panel compact-hero">
+    <div class="hero-copy">
+        <div class="eyebrow">Admin dashboard</div>
+        <h2>StormScope's Admin Desk</h2>
+        <p>
+            Add and maintain manual disaster records here while NASA-fed entries continue to sync into the same system without direct edits.
+        </p>
+    </div>
+</section>
 
-   I am the admin page
+<section class="content-grid admin-grid">
+    <article class="storm-panel">
+        <div class="panel-header">
+            <div>
+                <div class="eyebrow">Disaster editor</div>
+                <h3 id="adminFormTitle">Create a new event</h3>
+            </div>
+        </div>
 
+        <form id="adminDisasterForm" class="storm-form-grid">
+            <input type="hidden" id="adminEventId">
+            <div>
+                <label class="form-label" for="adminTitle">Title</label>
+                <input class="form-control storm-input" id="adminTitle" required>
+            </div>
+            <div>
+                <label class="form-label" for="adminCountry">Country</label>
+                <input class="form-control storm-input" id="adminCountry" required>
+            </div>
+            <div>
+                <label class="form-label" for="adminRegion">Region</label>
+                <input class="form-control storm-input" id="adminRegion">
+            </div>
+            <div>
+                <label class="form-label" for="adminCategory">Category</label>
+                <select class="form-select storm-input" id="adminCategory" required>
+                    <option value="" selected disabled hidden>Select a category</option>
+                    <option value="Flood">Flood</option>
+                    <option value="Floods">Floods</option>
+                    <option value="Severe Storms">Severe Storms</option>
+                    <option value="Wildfires">Wildfires</option>
+                    <option value="Landslides">Landslides</option>
+                    <option value="Volcanoes">Volcanoes</option>
+                    <option value="Drought">Drought</option>
+                    <option value="Temperature Extremes">Temperature Extremes</option>
+                    <option value="Dust and Haze">Dust and Haze</option>
+                    <option value="Sea and Lake Ice">Sea and Lake Ice</option>
+                    <option value="Custom">Custom</option>
+                </select>
+                <input class="form-control storm-input mt-3 d-none" id="adminCategoryCustom" placeholder="Type a custom category">
+            </div>
+            <div>
+                <label class="form-label" for="adminEventDate">Event date</label>
+                <input class="form-control storm-input" id="adminEventDate" type="date" required>
+            </div>
+            <div>
+                <label class="form-label" for="adminSeverity">Severity</label>
+                <select class="form-select storm-input" id="adminSeverity" required>
+                    <option value="Low">Low</option>
+                    <option value="Moderate" selected>Moderate</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+            <div class="grid-span-2">
+                <label class="form-label" for="adminSummary">Short summary</label>
+                <textarea class="form-control storm-input" id="adminSummary" rows="4" required></textarea>
+            </div>
+            <div>
+                <label class="form-label" for="adminLatitude">Latitude</label>
+                <input class="form-control storm-input" id="adminLatitude" type="number" step="any">
+            </div>
+            <div>
+                <label class="form-label" for="adminLongitude">Longitude</label>
+                <input class="form-control storm-input" id="adminLongitude" type="number" step="any">
+            </div>
+            <div>
+                <label class="form-label" for="adminSourceName">Source name</label>
+                <input class="form-control storm-input" id="adminSourceName" value="StormScope Desk">
+            </div>
+            <div>
+                <label class="form-label" for="adminSourceUrl">Source URL</label>
+                <input class="form-control storm-input" id="adminSourceUrl" type="url">
+            </div>
+            <div class="button-row grid-span-2">
+                <button class="btn btn-storm-primary" type="submit">Save event</button>
+                <button class="btn btn-storm-secondary" id="adminCancelEdit" type="button">Clear form</button>
+            </div>
+        </form>
+    </article>
+
+    <article class="storm-panel admin-records-panel">
+        <div class="panel-header">
+            <div>
+                <div class="eyebrow">Existing records</div>
+                <h3>Manage manual entries and review synced ones</h3>
+            </div>
+        </div>
+        <div id="adminDisasterList" class="stack-list">
+            <div class="empty-state">Loading disaster records...</div>
+        </div>
+    </article>
+</section>
+
+<section class="storm-panel admin-users-panel">
+    <div class="panel-header admin-users-header">
+        <div>
+            <div class="eyebrow">User management</div>
+            <h3>Review all accounts and manage user access</h3>
+        </div>
+    </div>
+    <div id="adminUserList" class="stack-list">
+        <div class="empty-state">Loading user accounts...</div>
+    </div>
+</section>
 {% endblock %}
