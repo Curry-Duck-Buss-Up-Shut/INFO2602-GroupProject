@@ -1,3 +1,4 @@
+import asyncio
 from datetime import date
 
 import typer
@@ -6,8 +7,9 @@ from sqlmodel import Session, select
 
 from app.database import create_db_and_tables, drop_all, engine, get_cli_session
 from app.models import DisasterEvent, User
+from app.repositories.disaster_event import DisasterEventRepository
 from app.schemas.user import AdminCreate, RegularUserCreate
-from app.services.disaster_service import NASA_EXTERNAL_SOURCE
+from app.services.disaster_service import DisasterService, NASA_EXTERNAL_SOURCE
 from app.utilities.security import encrypt_password
 
 cli = typer.Typer(help="StormScope maintenance commands.")
@@ -161,19 +163,42 @@ def initialize():
         )
         db.commit()
 
-        restored_nasa_count = _restore_preserved_nasa_records(
-            db,
-            preserved_nasa_records,
-            old_usernames_by_id,
-            {
-                bob_db.username: bob_db.id,
-                rick_db.username: rick_db.id,
-                sally_db.username: sally_db.id,
-                stormadmin_db.username: stormadmin_db.id,
-            },
-        )
+        user_ids_by_username = {
+            bob_db.username: bob_db.id,
+            rick_db.username: rick_db.id,
+            sally_db.username: sally_db.id,
+            stormadmin_db.username: stormadmin_db.id,
+        }
 
-    print(f"Database initialized. Preserved {restored_nasa_count} NASA record(s).")
+        restored_nasa_count = 0
+        nasa_sync_summary = "NASA sync not attempted."
+
+        try:
+            nasa_sync = asyncio.run(
+                DisasterService(DisasterEventRepository(db)).sync_nasa_feed(
+                    limit=250,
+                    include_wildfires=True,
+                    max_age_minutes=0,
+                    created_by=stormadmin_db.id,
+                    force=True,
+                )
+            )
+            nasa_sync_summary = (
+                f"NASA sync imported {nasa_sync['imported']} and updated {nasa_sync['updated']} "
+                f"records from {nasa_sync['total_seen']} live event(s)."
+            )
+        except Exception as exc:
+            restored_nasa_count = _restore_preserved_nasa_records(
+                db,
+                preserved_nasa_records,
+                old_usernames_by_id,
+                user_ids_by_username,
+            )
+            nasa_sync_summary = (
+                f"NASA sync failed ({exc}). Restored {restored_nasa_count} preserved NASA record(s) instead."
+            )
+
+    print(f"Database initialized. {nasa_sync_summary}")
 
 
 if __name__ == "__main__":
