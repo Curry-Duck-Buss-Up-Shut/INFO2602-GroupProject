@@ -205,6 +205,7 @@ const StormScopeApp = (() => {
         { name: "Funafuti", country: "Tuvalu", latitude: -8.5211, longitude: 179.1962, timezone: "Pacific/Funafuti" },
     ];
     const state = {
+        initialized: false,
         globe: null,
         detailMap: null,
         detailMarker: null,
@@ -2009,6 +2010,8 @@ const StormScopeApp = (() => {
     }
 
     async function init() {
+        if (state.initialized) return;
+        state.initialized = true;
         loadWeatherGameStats();
         renderWeatherGameStats();
         renderWeatherGameRound();
@@ -2095,4 +2098,14 @@ const StormScopeApp = (() => {
     return { init };
 })();
 
-document.addEventListener("DOMContentLoaded", StormScopeApp.init);
+function bootstrapStormScopeApp() {
+    if (window.__stormscopeAppBootstrapped) return;
+    window.__stormscopeAppBootstrapped = true;
+    StormScopeApp.init();
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootstrapStormScopeApp, { once: true });
+} else {
+    bootstrapStormScopeApp();
+}
