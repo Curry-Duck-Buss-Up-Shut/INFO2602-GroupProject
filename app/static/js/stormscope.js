@@ -2,6 +2,7 @@ const StormScopeApp = (() => {
     const GLOBE_VIEW_WORLD = { lat: 18, lng: -25, altitude: 2.2 };
     const WEATHER_GAME_STORAGE_KEY = "stormscope-weather-duel-stats";
     const WEATHER_GAME_NEXT_ROUND_DELAY_MS = 7000;
+    const WATCHLIST_SNAPSHOT_LIMIT = 5;
     const EXPLORER_PENDING_CITY_STORAGE_KEY = "stormscope-pending-explorer-city";
     const WEATHER_GAME_CITIES = [
         { name: "Port of Spain", country: "Trinidad and Tobago", latitude: 10.6603, longitude: -61.5089, timezone: "America/Port_of_Spain" },
@@ -1176,14 +1177,41 @@ const StormScopeApp = (() => {
             container.innerHTML = `<div class="empty-state">Save cities from the explorer to populate your weather dashboard.</div>`;
             return;
         }
-        const cities = state.watchlist;
+        const cities = [...state.watchlist]
+            .sort((left, right) => Number(left.priority || 0) - Number(right.priority || 0))
+            .slice(0, WATCHLIST_SNAPSHOT_LIMIT);
+        const hiddenCityCount = Math.max(0, state.watchlist.length - cities.length);
         const hasInlineWeatherDetails = Boolean(document.getElementById("currentWeatherPanel") && document.getElementById("forecastGrid"));
         const canOpenWeatherDetails = hasInlineWeatherDetails || window.location.pathname === "/app";
-        try {
-            const weatherCards = await Promise.all(cities.map(async (city, index) => {
-                const weather = await loadCurrentWeather({ latitude: city.latitude, longitude: city.longitude, timezone: city.timezone });
+        const snapshotResults = await Promise.allSettled(
+            cities.map((city) => loadCurrentWeather({ latitude: city.latitude, longitude: city.longitude, timezone: city.timezone }))
+        );
+        const successfulSnapshots = [];
+        const weatherCards = snapshotResults.map((result, index) => {
+            const city = cities[index];
+            if (result.status !== "fulfilled") {
+                return `
+                    <article class="storm-card">
+                        <div class="weather-snapshot-header">
+                            <div>
+                                <div class="eyebrow">Priority ${city.priority}</div>
+                                <h4>${city.nickname || city.city_name}</h4>
+                                <div class="weather-snapshot-location">${city.city_name}, ${city.country_name}</div>
+                            </div>
+                            ${renderWeatherIcon(null, true, "weather-icon-badge weather-icon-badge-compact")}
+                        </div>
+                        <div class="metric-value">--</div>
+                        ${renderDataLine("Condition", "Live weather unavailable", null)}
+                        ${renderDataLine("Status", "Try again shortly.", "fa-solid fa-triangle-exclamation")}
+                    </article>
+                `;
+            }
+
+            const weather = result.value;
+            const snapshotIndex = successfulSnapshots.length;
+            successfulSnapshots.push(city);
                 const interactionAttrs = canOpenWeatherDetails
-                    ? ` class="storm-card watchlist-snapshot-card" data-snapshot-index="${index}" role="button" tabindex="0"`
+                    ? ` class="storm-card watchlist-snapshot-card" data-snapshot-index="${snapshotIndex}" role="button" tabindex="0"`
                     : ` class="storm-card"`;
                 return `
                     <article${interactionAttrs}>
@@ -1200,11 +1228,19 @@ const StormScopeApp = (() => {
                         ${renderDataLine("Local time", weather.local_time || "Unavailable", weather.is_day ? "fa-solid fa-sun" : "fa-solid fa-moon")}
                     </article>
                 `;
-            }));
-            container.innerHTML = weatherCards.join("");
+        });
+        if (!successfulSnapshots.length && snapshotResults.length) {
+            container.innerHTML = `<div class="empty-state">Saved cities loaded, but the live weather snapshots could not be refreshed.</div>`;
+            return;
+        }
+
+        const snapshotNote = hiddenCityCount
+            ? `<div class="empty-state">Showing live weather for your top ${cities.length} saved cities to keep requests lighter.</div>`
+            : "";
+        container.innerHTML = `${weatherCards.join("")}${snapshotNote}`;
             if (canOpenWeatherDetails) {
                 const openSnapshotWeather = async (snapshotIndex) => {
-                    const city = cities[snapshotIndex];
+                    const city = successfulSnapshots[snapshotIndex];
                     if (!city) return;
                     const normalizedCity = normalizeExplorerCity({
                         name: city.city_name,
@@ -1241,9 +1277,6 @@ const StormScopeApp = (() => {
                     });
                 });
             }
-        } catch (error) {
-            container.innerHTML = `<div class="empty-state">Saved cities loaded, but the live weather snapshots could not be refreshed.</div>`;
-        }
     }
 
     async function loadWatchlist() {
