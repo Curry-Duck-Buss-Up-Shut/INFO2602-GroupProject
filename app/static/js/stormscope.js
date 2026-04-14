@@ -1,7 +1,6 @@
 const StormScopeApp = (() => {
     const GLOBE_VIEW_WORLD = { lat: 18, lng: -25, altitude: 2.2 };
     const WEATHER_GAME_STORAGE_KEY = "stormscope-weather-duel-stats";
-    const WEATHER_GAME_NEXT_ROUND_DELAY_MS = 7000;
     const WATCHLIST_SNAPSHOT_LIMIT = 5;
     const WEATHER_CURRENT_CACHE_TTL_MS = 120000;
     const WEATHER_FORECAST_CACHE_TTL_MS = 600000;
@@ -223,9 +222,6 @@ const StormScopeApp = (() => {
             streak: 0,
             currentRound: null,
             loading: false,
-            nextRoundTimer: null,
-            nextRoundCountdownInterval: null,
-            nextRoundStartsAt: null,
         },
     };
     const weatherResponseCache = {
@@ -486,27 +482,18 @@ const StormScopeApp = (() => {
     function renderWeatherGameTimer() {
         const timer = document.getElementById("weatherGameTimer");
         const revealTimer = document.getElementById("weatherGameRevealTimer");
-        const countdownCard = document.getElementById("weatherGameCountdownCard");
-        const countdownValue = document.getElementById("weatherGameCountdownValue");
-        const countdownLabel = document.getElementById("weatherGameCountdownLabel");
-        if (!timer && !revealTimer && !countdownCard && !countdownValue && !countdownLabel) return;
+        if (!timer && !revealTimer) return;
 
         let text = "Start a duel when you want a fresh saved comparison.";
         let active = false;
-        let countdownDisplay = "--";
-        let countdownMeta = "manual start";
 
         if (state.weatherGame.loading) {
             text = "Preparing the next duel now...";
             active = true;
-            countdownDisplay = "0";
-            countdownMeta = "loading duel";
         } else if (state.weatherGame.currentRound?.resolved) {
             text = "Round finished. Click New Duel for another comparison.";
         } else if (state.weatherGame.currentRound) {
             text = "Make your pick to finish this duel.";
-            countdownDisplay = "1";
-            countdownMeta = "active duel";
         }
 
         if (timer) {
@@ -518,35 +505,6 @@ const StormScopeApp = (() => {
                 ? "Click New Duel when you're ready."
                 : text;
         }
-        if (countdownValue) countdownValue.textContent = countdownDisplay;
-        if (countdownLabel) countdownLabel.textContent = countdownMeta;
-        if (countdownCard) countdownCard.classList.toggle("active", active);
-    }
-
-    function clearWeatherGameCountdown() {
-        if (state.weatherGame.nextRoundTimer) {
-            window.clearTimeout(state.weatherGame.nextRoundTimer);
-            state.weatherGame.nextRoundTimer = null;
-        }
-        if (state.weatherGame.nextRoundCountdownInterval) {
-            window.clearInterval(state.weatherGame.nextRoundCountdownInterval);
-            state.weatherGame.nextRoundCountdownInterval = null;
-        }
-        state.weatherGame.nextRoundStartsAt = null;
-    }
-
-    function scheduleWeatherGameNextRound() {
-        clearWeatherGameCountdown();
-        state.weatherGame.nextRoundStartsAt = Date.now() + WEATHER_GAME_NEXT_ROUND_DELAY_MS;
-        renderWeatherGameTimer();
-        state.weatherGame.nextRoundCountdownInterval = window.setInterval(() => {
-            renderWeatherGameTimer();
-        }, 100);
-        state.weatherGame.nextRoundTimer = window.setTimeout(() => {
-            clearWeatherGameCountdown();
-            renderWeatherGameTimer();
-            startWeatherDuel();
-        }, WEATHER_GAME_NEXT_ROUND_DELAY_MS);
     }
 
     function pickWeatherGameCities() {
@@ -647,7 +605,6 @@ const StormScopeApp = (() => {
 
     async function startWeatherDuel() {
         if (!document.getElementById("weatherGameOptions")) return;
-        clearWeatherGameCountdown();
         state.weatherGame.loading = true;
         state.weatherGame.currentRound = null;
         setWeatherGamePrompt("Loading two saved cities for the next duel...");
@@ -687,7 +644,6 @@ const StormScopeApp = (() => {
         persistWeatherGameStats();
         renderWeatherGameStats();
         renderWeatherGameRound();
-        clearWeatherGameCountdown();
         renderWeatherGameTimer();
     }
 
