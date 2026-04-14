@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     weather_current_snapshot_stale_ttl_seconds: int = 86400
     weather_forecast_snapshot_ttl_seconds: int = 10800
     weather_forecast_snapshot_stale_ttl_seconds: int = 86400
+    weather_game_csv_path: str = "gameinfo.csv"
     open_meteo_geocoding_url: str = "https://geocoding-api.open-meteo.com/v1/search"
     open_meteo_forecast_url: str = "https://api.open-meteo.com/v1/forecast"
     nasa_eonet_url: str = "https://eonet.gsfc.nasa.gov/api/v3/events"

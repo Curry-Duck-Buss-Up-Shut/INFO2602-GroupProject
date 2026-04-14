@@ -13,7 +13,7 @@ class WeatherGameService:
     def build_round(self) -> dict[str, Any]:
         snapshots = list(self.snapshot_repo.list_snapshots())
         if len(snapshots) < 2:
-            raise ValueError("The saved mini game weather deck is not ready yet.")
+            raise ValueError("The CSV mini game deck is not ready yet.")
 
         for _ in range(8):
             left, right = random.sample(snapshots, 2)
