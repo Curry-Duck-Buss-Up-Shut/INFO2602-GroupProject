@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     db_additional_overflow: int = 10
     db_pool_timeout: int = 10
     db_pool_recycle: int = 1800
-    weather_cache_ttl_seconds: int = 300
+    weather_cache_ttl_seconds: int = 60
     weather_stale_ttl_seconds: int = 1800
     weather_search_cache_ttl_seconds: int = 1800
     weather_forecast_snapshot_ttl_seconds: int = 10800

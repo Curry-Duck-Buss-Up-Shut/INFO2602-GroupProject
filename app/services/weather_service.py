@@ -103,8 +103,17 @@ class WeatherService:
         ]
 
     async def get_current_weather(self, latitude: float, longitude: float, timezone: str = "auto") -> dict[str, Any]:
+        settings = get_settings()
         try:
-            data = await self._fetch_live_current_weather(latitude, longitude, timezone)
+            normalized_timezone = timezone or "auto"
+            data = await self._get_or_fetch_json(
+                cache_key=(
+                    f"weather-current:{round(latitude, 4)}:{round(longitude, 4)}:{normalized_timezone.lower()}"
+                ),
+                ttl_seconds=settings.weather_cache_ttl_seconds,
+                stale_ttl_seconds=settings.weather_stale_ttl_seconds,
+                fetcher=lambda: self._fetch_live_current_weather(latitude, longitude, normalized_timezone),
+            )
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code == 429:
                 raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
