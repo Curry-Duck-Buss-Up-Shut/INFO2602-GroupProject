@@ -9,6 +9,7 @@ from typing import Any, Awaitable, Callable, Optional
 import httpx
 
 from app.config import get_settings
+from app.repositories.weather_current_snapshot import WeatherCurrentSnapshotRepository
 from app.repositories.weather_forecast_snapshot import WeatherForecastSnapshotRepository
 
 
@@ -69,8 +70,13 @@ _cache_lock = Lock()
 
 
 class WeatherService:
-    def __init__(self, forecast_repo: WeatherForecastSnapshotRepository | None = None):
+    def __init__(
+        self,
+        forecast_repo: WeatherForecastSnapshotRepository | None = None,
+        current_snapshot_repo: WeatherCurrentSnapshotRepository | None = None,
+    ):
         self.forecast_repo = forecast_repo
+        self.current_snapshot_repo = current_snapshot_repo
 
     async def search_city(self, query: str, count: int = 6) -> list[dict[str, Any]]:
         normalized_query = query.strip()
@@ -105,6 +111,21 @@ class WeatherService:
     async def get_current_weather(self, latitude: float, longitude: float, timezone: str = "auto") -> dict[str, Any]:
         settings = get_settings()
         normalized_location = self._normalize_weather_location(latitude, longitude, timezone)
+        snapshot = None
+        snapshot_payload = None
+
+        if self.current_snapshot_repo:
+            snapshot = self.current_snapshot_repo.get_snapshot(
+                normalized_location["latitude"],
+                normalized_location["longitude"],
+                normalized_location["timezone"],
+            )
+            snapshot_payload = self._deserialize_current_snapshot(snapshot.weather_json) if snapshot else None
+            if snapshot_payload and not self._is_current_snapshot_stale(
+                snapshot.fetched_at,
+                settings.weather_current_snapshot_ttl_seconds,
+            ):
+                return snapshot_payload
         try:
             data = await self._get_or_fetch_json(
                 cache_key=self._build_current_weather_cache_key(**normalized_location),
@@ -113,10 +134,32 @@ class WeatherService:
                 fetcher=lambda: self._fetch_live_current_weather(**normalized_location),
             )
         except httpx.HTTPStatusError as exc:
+            if snapshot_payload and snapshot and self._is_current_snapshot_servable(
+                snapshot.fetched_at,
+                settings.weather_current_snapshot_stale_ttl_seconds,
+            ):
+                return snapshot_payload
             if exc.response.status_code == 429:
                 raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
             raise
-        return self._format_current_weather_payload(data)
+        except Exception:
+            if snapshot_payload and snapshot and self._is_current_snapshot_servable(
+                snapshot.fetched_at,
+                settings.weather_current_snapshot_stale_ttl_seconds,
+            ):
+                return snapshot_payload
+            raise
+
+        formatted_payload = self._format_current_weather_payload(data)
+        if self.current_snapshot_repo:
+            self.current_snapshot_repo.upsert_snapshot(
+                latitude=normalized_location["latitude"],
+                longitude=normalized_location["longitude"],
+                timezone_name=normalized_location["timezone"],
+                weather_json=json.dumps(formatted_payload),
+                fetched_at=datetime.now(dt_timezone.utc),
+            )
+        return formatted_payload
 
     async def get_current_weather_batch(self, locations: list[dict[str, Any]]) -> list[dict[str, Any] | None]:
         if not locations:
@@ -134,6 +177,7 @@ class WeatherService:
         now = time.monotonic()
         results: list[dict[str, Any] | None] = [None] * len(normalized_locations)
         stale_entries: dict[int, CacheEntry] = {}
+        stale_snapshot_payloads: dict[int, dict[str, Any]] = {}
         uncached_locations: list[dict[str, Any]] = []
         uncached_indices: list[int] = []
 
@@ -143,6 +187,24 @@ class WeatherService:
             if cached_entry and cached_entry.expires_at > now:
                 results[index] = self._format_current_weather_payload(cached_entry.value)
                 continue
+            if self.current_snapshot_repo:
+                snapshot = self.current_snapshot_repo.get_snapshot(
+                    location["latitude"],
+                    location["longitude"],
+                    location["timezone"],
+                )
+                snapshot_payload = self._deserialize_current_snapshot(snapshot.weather_json) if snapshot else None
+                if snapshot_payload and not self._is_current_snapshot_stale(
+                    snapshot.fetched_at,
+                    settings.weather_current_snapshot_ttl_seconds,
+                ):
+                    results[index] = snapshot_payload
+                    continue
+                if snapshot_payload and self._is_current_snapshot_servable(
+                    snapshot.fetched_at,
+                    settings.weather_current_snapshot_stale_ttl_seconds,
+                ):
+                    stale_snapshot_payloads[index] = snapshot_payload
             if cached_entry and cached_entry.stale_until > now:
                 stale_entries[index] = cached_entry
             uncached_locations.append(location)
@@ -154,14 +216,14 @@ class WeatherService:
         try:
             payloads = await self._fetch_live_current_weather_batch(uncached_locations)
         except httpx.HTTPStatusError as exc:
-            self._apply_stale_batch_results(results, stale_entries, uncached_indices)
+            self._apply_stale_batch_results(results, stale_entries, stale_snapshot_payloads, uncached_indices)
             if exc.response.status_code == 429 and not any(result is not None for result in results):
                 raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
             if any(result is not None for result in results):
                 return results
             raise
         except Exception:
-            self._apply_stale_batch_results(results, stale_entries, uncached_indices)
+            self._apply_stale_batch_results(results, stale_entries, stale_snapshot_payloads, uncached_indices)
             if any(result is not None for result in results):
                 return results
             raise
@@ -174,12 +236,26 @@ class WeatherService:
             if isinstance(payload, dict):
                 cache_key = self._build_current_weather_cache_key(**normalized_locations[result_index])
                 self._set_cache_entry(cache_key, payload, expires_at=expires_at, stale_until=stale_until)
-                results[result_index] = self._format_current_weather_payload(payload)
+                formatted_payload = self._format_current_weather_payload(payload)
+                if self.current_snapshot_repo:
+                    self.current_snapshot_repo.upsert_snapshot(
+                        latitude=normalized_locations[result_index]["latitude"],
+                        longitude=normalized_locations[result_index]["longitude"],
+                        timezone_name=normalized_locations[result_index]["timezone"],
+                        weather_json=json.dumps(formatted_payload),
+                        fetched_at=datetime.now(dt_timezone.utc),
+                    )
+                results[result_index] = formatted_payload
                 continue
 
             stale_entry = stale_entries.get(result_index)
             if stale_entry:
                 results[result_index] = self._format_current_weather_payload(stale_entry.value)
+                continue
+
+            snapshot_payload = stale_snapshot_payloads.get(result_index)
+            if snapshot_payload:
+                results[result_index] = snapshot_payload
 
         return results
 
@@ -343,12 +419,17 @@ class WeatherService:
         self,
         results: list[dict[str, Any] | None],
         stale_entries: dict[int, CacheEntry],
+        stale_snapshot_payloads: dict[int, dict[str, Any]],
         indices: list[int],
     ) -> None:
         for index in indices:
             stale_entry = stale_entries.get(index)
             if stale_entry:
                 results[index] = self._format_current_weather_payload(stale_entry.value)
+                continue
+            snapshot_payload = stale_snapshot_payloads.get(index)
+            if snapshot_payload:
+                results[index] = snapshot_payload
 
     async def _fetch_live_current_weather(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
         settings = get_settings()
@@ -428,11 +509,29 @@ class WeatherService:
             return []
         return payload if isinstance(payload, list) else []
 
+    def _deserialize_current_snapshot(self, weather_json: str) -> dict[str, Any] | None:
+        try:
+            payload = json.loads(weather_json)
+        except (TypeError, ValueError):
+            return None
+        return payload if isinstance(payload, dict) else None
+
+    def _coerce_utc_datetime(self, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            return value.replace(tzinfo=dt_timezone.utc)
+        return value.astimezone(dt_timezone.utc)
+
+    def _is_current_snapshot_stale(self, fetched_at: datetime, ttl_seconds: int) -> bool:
+        return datetime.now(dt_timezone.utc) - self._coerce_utc_datetime(fetched_at) > timedelta(seconds=ttl_seconds)
+
+    def _is_current_snapshot_servable(self, fetched_at: datetime, stale_ttl_seconds: int) -> bool:
+        return datetime.now(dt_timezone.utc) - self._coerce_utc_datetime(fetched_at) <= timedelta(seconds=stale_ttl_seconds)
+
     def _is_forecast_snapshot_stale(self, fetched_at: datetime, ttl_seconds: int) -> bool:
-        return datetime.now(dt_timezone.utc) - fetched_at > timedelta(seconds=ttl_seconds)
+        return datetime.now(dt_timezone.utc) - self._coerce_utc_datetime(fetched_at) > timedelta(seconds=ttl_seconds)
 
     def _is_forecast_snapshot_servable(self, fetched_at: datetime, stale_ttl_seconds: int) -> bool:
-        return datetime.now(dt_timezone.utc) - fetched_at <= timedelta(seconds=stale_ttl_seconds)
+        return datetime.now(dt_timezone.utc) - self._coerce_utc_datetime(fetched_at) <= timedelta(seconds=stale_ttl_seconds)
 
     async def _request_json(self, url: str, params: dict[str, Any]) -> dict[str, Any]:
         async with httpx.AsyncClient(timeout=20.0) as client:

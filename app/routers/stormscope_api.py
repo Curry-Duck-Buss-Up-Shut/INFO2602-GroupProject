@@ -4,6 +4,7 @@ from app.config import get_settings
 from app.dependencies import AdminDep, AuthDep, SessionDep
 from app.repositories.disaster_event import DisasterEventRepository
 from app.repositories.saved_location import SavedLocationRepository
+from app.repositories.weather_current_snapshot import WeatherCurrentSnapshotRepository
 from app.repositories.user import UserRepository
 from app.repositories.weather_forecast_snapshot import WeatherForecastSnapshotRepository
 from app.repositories.weather_game_snapshot import WeatherGameSnapshotRepository
@@ -129,9 +130,10 @@ async def weather_search(q: str = Query(min_length=2)):
 async def weather_current(
     latitude: float,
     longitude: float,
+    db: SessionDep,
     timezone: str = "auto",
 ):
-    service = WeatherService()
+    service = WeatherService(current_snapshot_repo=WeatherCurrentSnapshotRepository(db))
     try:
         return await service.get_current_weather(latitude=latitude, longitude=longitude, timezone=timezone)
     except UpstreamRateLimitError as exc:
@@ -144,8 +146,8 @@ async def weather_current(
 
 
 @api_router.post("/weather/current/batch")
-async def weather_current_batch(payload: WeatherCurrentBatchRequest):
-    service = WeatherService()
+async def weather_current_batch(payload: WeatherCurrentBatchRequest, db: SessionDep):
+    service = WeatherService(current_snapshot_repo=WeatherCurrentSnapshotRepository(db))
     try:
         return {
             "results": await service.get_current_weather_batch(
@@ -160,7 +162,7 @@ async def weather_current_batch(payload: WeatherCurrentBatchRequest):
             )
         }
     except UpstreamRateLimitError as exc:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
+        return {"results": [None for _ in payload.locations], "detail": str(exc)}
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,

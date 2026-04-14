@@ -1220,44 +1220,22 @@ const StormScopeApp = (() => {
             container.innerHTML = `<div class="empty-state">Save cities from the explorer to populate your weather dashboard.</div>`;
             return;
         }
+
         const cities = [...state.watchlist]
             .sort((left, right) => Number(left.priority || 0) - Number(right.priority || 0))
             .slice(0, WATCHLIST_SNAPSHOT_LIMIT);
         const hiddenCityCount = Math.max(0, state.watchlist.length - cities.length);
         const hasInlineWeatherDetails = Boolean(document.getElementById("currentWeatherPanel") && document.getElementById("forecastGrid"));
         const canOpenWeatherDetails = hasInlineWeatherDetails || window.location.pathname === "/app";
-        let snapshotResults = [];
-        try {
-            snapshotResults = await loadCurrentWeatherBatch(cities);
-        } catch (error) {
-            snapshotResults = cities.map(() => null);
-        }
-        const successfulSnapshots = [];
-        const weatherCards = snapshotResults.map((weather, index) => {
-            const city = cities[index];
-            if (!weather) {
-                return `
-                    <article class="storm-card">
-                        <div class="weather-snapshot-header">
-                            <div>
-                                <div class="eyebrow">Priority ${city.priority}</div>
-                                <h4>${city.nickname || city.city_name}</h4>
-                                <div class="weather-snapshot-location">${city.city_name}, ${city.country_name}</div>
-                            </div>
-                            ${renderWeatherIcon(null, true, "weather-icon-badge weather-icon-badge-compact")}
-                        </div>
-                        <div class="metric-value">--</div>
-                        ${renderDataLine("Condition", "Live weather unavailable", null)}
-                        ${renderDataLine("Status", "Try again shortly.", "fa-solid fa-triangle-exclamation")}
-                    </article>
-                `;
-            }
 
-            const snapshotIndex = successfulSnapshots.length;
-            successfulSnapshots.push(city);
+        const weatherCards = cities.map((city, index) => {
             const interactionAttrs = canOpenWeatherDetails
-                ? ` class="storm-card watchlist-snapshot-card" data-snapshot-index="${snapshotIndex}" role="button" tabindex="0"`
+                ? ` class="storm-card watchlist-snapshot-card" data-snapshot-index="${index}" role="button" tabindex="0"`
                 : ` class="storm-card"`;
+            const actionLabel = hasInlineWeatherDetails
+                ? "Open to load live weather"
+                : "Open in explorer to load weather";
+
             return `
                 <article${interactionAttrs}>
                     <div class="weather-snapshot-header">
@@ -1266,46 +1244,43 @@ const StormScopeApp = (() => {
                             <h4>${city.nickname || city.city_name}</h4>
                             <div class="weather-snapshot-location">${city.city_name}, ${city.country_name}</div>
                         </div>
-                        ${renderWeatherIcon(weather.weather_code, weather.is_day, "weather-icon-badge weather-icon-badge-compact")}
+                        ${renderWeatherIcon(null, true, "weather-icon-badge weather-icon-badge-compact")}
                     </div>
-                    <div class="metric-value">${Math.round(weather.temperature)}°C</div>
-                    ${renderDataLine("Condition", renderWeatherLabel(weather), null)}
-                    ${renderDataLine("Local time", weather.local_time || "Unavailable", weather.is_day ? "fa-solid fa-sun" : "fa-solid fa-moon")}
+                    <div class="metric-value">Saved</div>
+                    ${renderDataLine("Status", "Dashboard weather refresh is paused to protect live lookups.", "fa-solid fa-shield-halved")}
+                    ${renderDataLine("Action", actionLabel, "fa-solid fa-location-arrow")}
                 </article>
             `;
         });
-        if (!successfulSnapshots.length && cities.length) {
-            container.innerHTML = `<div class="empty-state">Saved cities loaded, but the live weather snapshots could not be refreshed.</div>`;
-            return;
-        }
 
-        const snapshotNote = hiddenCityCount
-            ? `<div class="empty-state">Showing live weather for your top ${cities.length} saved cities to keep requests lighter.</div>`
-            : "";
+        const openSnapshotWeather = async (snapshotIndex) => {
+            const city = cities[snapshotIndex];
+            if (!city) return;
+            const normalizedCity = normalizeExplorerCity({
+                name: city.city_name,
+                country: city.country_name,
+                latitude: city.latitude,
+                longitude: city.longitude,
+                timezone: city.timezone,
+            });
+            if (!normalizedCity) return;
+
+            if (hasInlineWeatherDetails) {
+                await selectCity(normalizedCity);
+                document.getElementById("currentWeatherPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+            }
+
+            queuePendingExplorerCity(normalizedCity);
+            window.location.href = "/app/explorer#currentWeatherPanel";
+        };
+
+        const snapshotNote = `<div class="empty-state">${hiddenCityCount
+            ? `Showing your top ${cities.length} saved cities.`
+            : "Saved locations are ready."} Open a city to load live current weather and the 7-day forecast on demand.</div>`;
         container.innerHTML = `${weatherCards.join("")}${snapshotNote}`;
+
         if (canOpenWeatherDetails) {
-            const openSnapshotWeather = async (snapshotIndex) => {
-                const city = successfulSnapshots[snapshotIndex];
-                if (!city) return;
-                const normalizedCity = normalizeExplorerCity({
-                    name: city.city_name,
-                    country: city.country_name,
-                    latitude: city.latitude,
-                    longitude: city.longitude,
-                    timezone: city.timezone,
-                });
-                if (!normalizedCity) return;
-
-                if (hasInlineWeatherDetails) {
-                    await selectCity(normalizedCity);
-                    document.getElementById("currentWeatherPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    return;
-                }
-
-                queuePendingExplorerCity(normalizedCity);
-                window.location.href = "/app/explorer#currentWeatherPanel";
-            };
-
             container.querySelectorAll("[data-snapshot-index]").forEach((card) => {
                 card.addEventListener("click", async () => {
                     const snapshotIndex = Number(card.dataset.snapshotIndex);
