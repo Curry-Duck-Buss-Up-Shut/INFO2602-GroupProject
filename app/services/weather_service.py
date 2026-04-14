@@ -1,4 +1,8 @@
-from typing import Any, Optional
+import asyncio
+import time
+from dataclasses import dataclass
+from threading import Lock
+from typing import Any, Awaitable, Callable, Optional
 
 import httpx
 
@@ -40,19 +44,43 @@ DEFAULT_EONET_CATEGORIES = {
 }
 
 
+@dataclass(slots=True)
+class CacheEntry:
+    value: Any
+    expires_at: float
+    stale_until: float
+
+
+class UpstreamRateLimitError(RuntimeError):
+    def __init__(self, retry_after_seconds: int | None = None):
+        self.retry_after_seconds = retry_after_seconds
+        message = "The live weather service is temporarily busy. Please try again shortly."
+        if retry_after_seconds:
+            message = f"The live weather service is temporarily busy. Please try again in about {retry_after_seconds} seconds."
+        super().__init__(message)
+
+
+_response_cache: dict[str, CacheEntry] = {}
+_inflight_requests: dict[str, asyncio.Task] = {}
+_cache_lock = Lock()
+
+
 class WeatherService:
     async def search_city(self, query: str, count: int = 6) -> list[dict[str, Any]]:
-        if not query.strip():
+        normalized_query = query.strip()
+        if not normalized_query:
             return []
 
         settings = get_settings()
-        async with httpx.AsyncClient(timeout=20.0) as client:
-            response = await client.get(
+        payload = await self._get_or_fetch_json(
+            cache_key=f"weather-search:{normalized_query.lower()}:{count}",
+            ttl_seconds=settings.weather_search_cache_ttl_seconds,
+            stale_ttl_seconds=settings.weather_stale_ttl_seconds,
+            fetcher=lambda: self._request_json(
                 settings.open_meteo_geocoding_url,
-                params={"name": query, "count": count, "language": "en", "format": "json"},
-            )
-            response.raise_for_status()
-        payload = response.json()
+                params={"name": normalized_query, "count": count, "language": "en", "format": "json"},
+            ),
+        )
         results = payload.get("results", [])
         return [
             {
@@ -167,13 +195,19 @@ class WeatherService:
 
     async def _fetch_weather(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
         settings = get_settings()
-        async with httpx.AsyncClient(timeout=20.0) as client:
-            response = await client.get(
+        normalized_timezone = timezone or "auto"
+        return await self._get_or_fetch_json(
+            cache_key=(
+                f"weather:{round(latitude, 4)}:{round(longitude, 4)}:{normalized_timezone.lower()}"
+            ),
+            ttl_seconds=settings.weather_cache_ttl_seconds,
+            stale_ttl_seconds=settings.weather_stale_ttl_seconds,
+            fetcher=lambda: self._request_json(
                 settings.open_meteo_forecast_url,
                 params={
                     "latitude": latitude,
                     "longitude": longitude,
-                    "timezone": timezone or "auto",
+                    "timezone": normalized_timezone,
                     "current": ",".join(
                         [
                             "temperature_2m",
@@ -195,6 +229,89 @@ class WeatherService:
                     ),
                     "forecast_days": 7,
                 },
-            )
+            ),
+        )
+
+    async def _request_json(self, url: str, params: dict[str, Any]) -> dict[str, Any]:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.get(url, params=params)
             response.raise_for_status()
         return response.json()
+
+    async def _get_or_fetch_json(
+        self,
+        cache_key: str,
+        ttl_seconds: int,
+        stale_ttl_seconds: int,
+        fetcher: Callable[[], Awaitable[dict[str, Any]]],
+    ) -> dict[str, Any]:
+        now = time.monotonic()
+        cached_entry = self._get_cache_entry(cache_key)
+        if cached_entry and cached_entry.expires_at > now:
+            return cached_entry.value
+
+        created_task = False
+        with _cache_lock:
+            cached_entry = _response_cache.get(cache_key)
+            if cached_entry and cached_entry.expires_at > now:
+                return cached_entry.value
+            task = _inflight_requests.get(cache_key)
+            if task is None:
+                task = asyncio.create_task(fetcher())
+                _inflight_requests[cache_key] = task
+                created_task = True
+
+        try:
+            payload = await task
+        except httpx.HTTPStatusError as exc:
+            stale_entry = self._get_cache_entry(cache_key)
+            if exc.response.status_code == 429:
+                if stale_entry and stale_entry.stale_until > time.monotonic():
+                    return stale_entry.value
+                raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
+            if stale_entry and stale_entry.stale_until > time.monotonic():
+                return stale_entry.value
+            raise
+        except Exception:
+            stale_entry = self._get_cache_entry(cache_key)
+            if stale_entry and stale_entry.stale_until > time.monotonic():
+                return stale_entry.value
+            raise
+        finally:
+            if created_task:
+                with _cache_lock:
+                    if _inflight_requests.get(cache_key) is task:
+                        _inflight_requests.pop(cache_key, None)
+
+        self._set_cache_entry(
+            cache_key,
+            payload,
+            expires_at=time.monotonic() + ttl_seconds,
+            stale_until=time.monotonic() + ttl_seconds + stale_ttl_seconds,
+        )
+        return payload
+
+    def _get_cache_entry(self, cache_key: str) -> CacheEntry | None:
+        with _cache_lock:
+            return _response_cache.get(cache_key)
+
+    def _set_cache_entry(self, cache_key: str, value: dict[str, Any], expires_at: float, stale_until: float) -> None:
+        with _cache_lock:
+            _response_cache[cache_key] = CacheEntry(value=value, expires_at=expires_at, stale_until=stale_until)
+            self._prune_cache_locked()
+
+    def _prune_cache_locked(self) -> None:
+        now = time.monotonic()
+        expired_keys = [key for key, entry in _response_cache.items() if entry.stale_until <= now]
+        for key in expired_keys:
+            _response_cache.pop(key, None)
+
+    def _parse_retry_after_seconds(self, response: httpx.Response) -> int | None:
+        retry_after = response.headers.get("Retry-After")
+        if not retry_after:
+            return None
+        try:
+            seconds = int(retry_after)
+        except ValueError:
+            return None
+        return seconds if seconds > 0 else None

@@ -11,7 +11,7 @@ from app.schemas.watchlist import SavedLocationCreate, SavedLocationResponse, Sa
 from app.services.disaster_service import DisasterService
 from app.services.user_service import UserAuthorizationError, UserConflictError, UserService, UserValidationError
 from app.services.watchlist_service import WatchlistService
-from app.services.weather_service import WeatherService
+from app.services.weather_service import UpstreamRateLimitError, WeatherService
 from . import api_router
 
 
@@ -112,8 +112,13 @@ async def weather_search(q: str = Query(min_length=2)):
     service = WeatherService()
     try:
         return {"results": await service.search_city(q)}
-    except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Weather search failed: {exc}")
+    except UpstreamRateLimitError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Weather search is unavailable right now. Please try again shortly.",
+        )
 
 
 @api_router.get("/weather/current")
@@ -125,8 +130,13 @@ async def weather_current(
     service = WeatherService()
     try:
         return await service.get_current_weather(latitude=latitude, longitude=longitude, timezone=timezone)
-    except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Current weather lookup failed: {exc}")
+    except UpstreamRateLimitError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Current weather lookup failed right now. Please try again shortly.",
+        )
 
 
 @api_router.get("/weather/forecast")
@@ -138,8 +148,13 @@ async def weather_forecast(
     service = WeatherService()
     try:
         return await service.get_forecast(latitude=latitude, longitude=longitude, timezone=timezone)
-    except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Forecast lookup failed: {exc}")
+    except UpstreamRateLimitError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Forecast lookup failed right now. Please try again shortly.",
+        )
 
 
 @api_router.get("/external/eonet/events")

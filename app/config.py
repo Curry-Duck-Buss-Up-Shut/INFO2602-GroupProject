@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     db_additional_overflow: int = 10
     db_pool_timeout: int = 10
     db_pool_recycle: int = 1800
+    weather_cache_ttl_seconds: int = 300
+    weather_stale_ttl_seconds: int = 1800
+    weather_search_cache_ttl_seconds: int = 1800
     open_meteo_geocoding_url: str = "https://geocoding-api.open-meteo.com/v1/search"
     open_meteo_forecast_url: str = "https://api.open-meteo.com/v1/forecast"
     nasa_eonet_url: str = "https://eonet.gsfc.nasa.gov/api/v3/events"
