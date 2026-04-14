@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     weather_game_csv_path: str = "gameinfo.csv"
     open_meteo_geocoding_url: str = "https://geocoding-api.open-meteo.com/v1/search"
     open_meteo_forecast_url: str = "https://api.open-meteo.com/v1/forecast"
+    met_no_locationforecast_url: str = "https://api.met.no/weatherapi/locationforecast/2.0/compact"
+    met_no_user_agent: str = "StormScope/1.0 (student weather dashboard)"
     nasa_eonet_url: str = "https://eonet.gsfc.nasa.gov/api/v3/events"
     caribbean_lat_min: float = 5.0
     caribbean_lat_max: float = 30.0

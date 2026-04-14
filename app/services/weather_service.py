@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone as dt_timezone
 from threading import Lock
 from typing import Any, Awaitable, Callable, Optional
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import httpx
 
@@ -115,6 +116,7 @@ class WeatherService:
         normalized_location = self._normalize_weather_location(latitude, longitude, timezone)
         snapshot = None
         snapshot_payload = None
+        cache_key = self._build_current_weather_cache_key(**normalized_location)
 
         if self.current_snapshot_repo:
             snapshot = self.current_snapshot_repo.get_snapshot(
@@ -130,27 +132,31 @@ class WeatherService:
                 return snapshot_payload
         try:
             data = await self._get_or_fetch_json(
-                cache_key=self._build_current_weather_cache_key(**normalized_location),
+                cache_key=cache_key,
                 ttl_seconds=settings.weather_cache_ttl_seconds,
                 stale_ttl_seconds=settings.weather_stale_ttl_seconds,
                 fetcher=lambda: self._fetch_live_current_weather(**normalized_location),
             )
-        except httpx.HTTPStatusError as exc:
-            if snapshot_payload and snapshot and self._is_current_snapshot_servable(
-                snapshot.fetched_at,
-                settings.weather_current_snapshot_stale_ttl_seconds,
-            ):
-                return snapshot_payload
-            if exc.response.status_code == 429:
-                raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
-            raise
-        except Exception:
-            if snapshot_payload and snapshot and self._is_current_snapshot_servable(
-                snapshot.fetched_at,
-                settings.weather_current_snapshot_stale_ttl_seconds,
-            ):
-                return snapshot_payload
-            raise
+        except Exception as primary_error:
+            try:
+                data = await self._get_or_fetch_json(
+                    cache_key=f"{cache_key}:met-no",
+                    ttl_seconds=settings.weather_cache_ttl_seconds,
+                    stale_ttl_seconds=settings.weather_stale_ttl_seconds,
+                    fetcher=lambda: self._fetch_met_no_current_weather(**normalized_location),
+                )
+                self._cache_current_weather_fallback_payload(cache_key, data)
+            except Exception:
+                if snapshot_payload and snapshot and self._is_current_snapshot_servable(
+                    snapshot.fetched_at,
+                    settings.weather_current_snapshot_stale_ttl_seconds,
+                ):
+                    return snapshot_payload
+                if isinstance(primary_error, UpstreamRateLimitError):
+                    raise primary_error
+                if isinstance(primary_error, httpx.HTTPStatusError) and primary_error.response.status_code == 429:
+                    raise UpstreamRateLimitError(self._parse_retry_after_seconds(primary_error.response)) from primary_error
+                raise primary_error
 
         formatted_payload = self._format_current_weather_payload(data)
         if self.current_snapshot_repo:
@@ -281,25 +287,26 @@ class WeatherService:
 
         try:
             data = await self._fetch_live_forecast(normalized_latitude, normalized_longitude, normalized_timezone)
-        except httpx.HTTPStatusError as exc:
-            if forecast_days and snapshot and self._is_forecast_snapshot_servable(
-                snapshot.fetched_at,
-                settings.weather_forecast_snapshot_stale_ttl_seconds,
-            ):
-                return {"forecast": forecast_days}
-            if exc.response.status_code == 429:
-                raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
-            raise
-        except Exception:
-            if forecast_days and snapshot and self._is_forecast_snapshot_servable(
-                snapshot.fetched_at,
-                settings.weather_forecast_snapshot_stale_ttl_seconds,
-            ):
-                return {"forecast": forecast_days}
-            raise
-
-        daily = data.get("daily", {})
-        forecast_days = self._build_forecast_days(daily)
+            daily = data.get("daily", {})
+            forecast_days = self._build_forecast_days(daily)
+        except Exception as primary_error:
+            try:
+                forecast_days = await self._fetch_met_no_forecast(
+                    normalized_latitude,
+                    normalized_longitude,
+                    normalized_timezone,
+                )
+            except Exception:
+                if forecast_days and snapshot and self._is_forecast_snapshot_servable(
+                    snapshot.fetched_at,
+                    settings.weather_forecast_snapshot_stale_ttl_seconds,
+                ):
+                    return {"forecast": forecast_days}
+                if isinstance(primary_error, UpstreamRateLimitError):
+                    raise primary_error
+                if isinstance(primary_error, httpx.HTTPStatusError) and primary_error.response.status_code == 429:
+                    raise UpstreamRateLimitError(self._parse_retry_after_seconds(primary_error.response)) from primary_error
+                raise primary_error
 
         if self.forecast_repo and forecast_days:
             self.forecast_repo.upsert_snapshot(
@@ -397,6 +404,12 @@ class WeatherService:
 
     def _build_current_weather_cache_key(self, latitude: float, longitude: float, timezone: str) -> str:
         return f"weather-current:{latitude}:{longitude}:{timezone.lower()}"
+
+    def _cache_current_weather_fallback_payload(self, cache_key: str, payload: dict[str, Any]) -> None:
+        settings = get_settings()
+        expires_at = time.monotonic() + settings.weather_cache_ttl_seconds
+        stale_until = expires_at + settings.weather_stale_ttl_seconds
+        self._set_cache_entry(cache_key, payload, expires_at=expires_at, stale_until=stale_until)
 
     def _format_current_weather_payload(self, data: dict[str, Any]) -> dict[str, Any]:
         current = data.get("current", {})
@@ -504,6 +517,195 @@ class WeatherService:
             },
         )
 
+    async def _fetch_met_no_current_weather(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
+        payload = await self._fetch_met_no_locationforecast(latitude, longitude)
+        return self._build_met_no_current_weather_payload(payload, latitude, longitude, timezone or "auto")
+
+    async def _fetch_met_no_forecast(self, latitude: float, longitude: float, timezone: Optional[str]) -> list[dict[str, Any]]:
+        payload = await self._fetch_met_no_locationforecast(latitude, longitude)
+        return self._build_met_no_forecast_days(payload, timezone or "auto")
+
+    async def _fetch_met_no_locationforecast(self, latitude: float, longitude: float) -> dict[str, Any]:
+        settings = get_settings()
+        return await self._request_json(
+            settings.met_no_locationforecast_url,
+            params={"lat": latitude, "lon": longitude},
+            headers={"User-Agent": settings.met_no_user_agent},
+        )
+
+    def _build_met_no_current_weather_payload(
+        self,
+        payload: dict[str, Any],
+        latitude: float,
+        longitude: float,
+        timezone: str,
+    ) -> dict[str, Any]:
+        timeseries = payload.get("properties", {}).get("timeseries", [])
+        if not timeseries:
+            raise ValueError("MET Norway did not return current weather data.")
+
+        forecast_point = timeseries[0]
+        weather_data = forecast_point.get("data", {})
+        instant_details = weather_data.get("instant", {}).get("details", {})
+        observed_at = self._convert_met_no_time(forecast_point.get("time"), timezone)
+        symbol_code = self._get_met_no_symbol_code(weather_data)
+        weather_code = self._map_met_no_symbol_code(symbol_code)
+        wind_speed = instant_details.get("wind_speed")
+
+        return {
+            "latitude": latitude,
+            "longitude": longitude,
+            "timezone": timezone,
+            "timezone_abbreviation": observed_at.tzname() or "UTC",
+            "current": {
+                "time": observed_at.isoformat(),
+                "temperature_2m": instant_details.get("air_temperature"),
+                "apparent_temperature": instant_details.get("air_temperature"),
+                "relative_humidity_2m": instant_details.get("relative_humidity"),
+                "wind_speed_10m": round(wind_speed * 3.6, 1) if isinstance(wind_speed, (int, float)) else None,
+                "precipitation": self._get_met_no_precipitation_amount(weather_data),
+                "is_day": 1 if self._is_day_from_met_no_symbol(symbol_code, observed_at) else 0,
+                "weather_code": weather_code,
+            },
+        }
+
+    def _build_met_no_forecast_days(self, payload: dict[str, Any], timezone: str) -> list[dict[str, Any]]:
+        timeseries = payload.get("properties", {}).get("timeseries", [])
+        if not timeseries:
+            raise ValueError("MET Norway did not return forecast data.")
+
+        grouped_days: dict[str, dict[str, Any]] = {}
+        for entry in timeseries:
+            weather_data = entry.get("data", {})
+            instant_details = weather_data.get("instant", {}).get("details", {})
+            local_time = self._convert_met_no_time(entry.get("time"), timezone)
+            day_key = local_time.date().isoformat()
+            day_bucket = grouped_days.setdefault(
+                day_key,
+                {
+                    "date": day_key,
+                    "temperatures": [],
+                    "precipitation_probabilities": [],
+                    "symbol_code": None,
+                    "symbol_distance": None,
+                },
+            )
+
+            temperature = instant_details.get("air_temperature")
+            if isinstance(temperature, (int, float)):
+                day_bucket["temperatures"].append(float(temperature))
+
+            precipitation_probability = self._get_met_no_precipitation_probability(weather_data)
+            if isinstance(precipitation_probability, (int, float)):
+                day_bucket["precipitation_probabilities"].append(int(round(precipitation_probability)))
+
+            symbol_code = self._get_met_no_symbol_code(weather_data)
+            if symbol_code:
+                distance_to_midday = abs((local_time.hour + (local_time.minute / 60)) - 12)
+                if day_bucket["symbol_distance"] is None or distance_to_midday < day_bucket["symbol_distance"]:
+                    day_bucket["symbol_code"] = symbol_code
+                    day_bucket["symbol_distance"] = distance_to_midday
+
+        forecast_days = []
+        for day_key in sorted(grouped_days.keys())[:7]:
+            day_bucket = grouped_days[day_key]
+            temperatures = day_bucket["temperatures"]
+            if not temperatures:
+                continue
+            weather_code = self._map_met_no_symbol_code(day_bucket["symbol_code"])
+            precipitation_values = day_bucket["precipitation_probabilities"]
+            forecast_days.append(
+                {
+                    "date": day_bucket["date"],
+                    "weather_code": weather_code,
+                    "weather_label": WEATHER_CODE_LABELS.get(weather_code, "Unknown"),
+                    "temperature_max": round(max(temperatures), 1),
+                    "temperature_min": round(min(temperatures), 1),
+                    "precipitation_probability": max(precipitation_values) if precipitation_values else None,
+                }
+            )
+        return forecast_days
+
+    def _convert_met_no_time(self, value: str | None, timezone: str) -> datetime:
+        if not value:
+            return datetime.now(dt_timezone.utc)
+        observed_at = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return observed_at.astimezone(self._resolve_timezone(timezone))
+
+    def _resolve_timezone(self, timezone: str) -> dt_timezone | ZoneInfo:
+        normalized_timezone = (timezone or "").strip()
+        if not normalized_timezone or normalized_timezone.lower() == "auto":
+            return dt_timezone.utc
+        try:
+            return ZoneInfo(normalized_timezone)
+        except ZoneInfoNotFoundError:
+            return dt_timezone.utc
+
+    def _get_met_no_symbol_code(self, weather_data: dict[str, Any]) -> str | None:
+        for period in ("next_1_hours", "next_6_hours", "next_12_hours"):
+            symbol_code = weather_data.get(period, {}).get("summary", {}).get("symbol_code")
+            if symbol_code:
+                return str(symbol_code)
+        return None
+
+    def _get_met_no_precipitation_amount(self, weather_data: dict[str, Any]) -> float | int:
+        for period in ("next_1_hours", "next_6_hours", "next_12_hours"):
+            precipitation_amount = weather_data.get(period, {}).get("details", {}).get("precipitation_amount")
+            if isinstance(precipitation_amount, (int, float)):
+                return precipitation_amount
+        return 0
+
+    def _get_met_no_precipitation_probability(self, weather_data: dict[str, Any]) -> float | None:
+        for period in ("next_1_hours", "next_6_hours", "next_12_hours"):
+            probability = weather_data.get(period, {}).get("details", {}).get("probability_of_precipitation")
+            if isinstance(probability, (int, float)):
+                return float(probability)
+        return None
+
+    def _is_day_from_met_no_symbol(self, symbol_code: str | None, observed_at: datetime) -> bool:
+        normalized_symbol = (symbol_code or "").lower()
+        if "_night" in normalized_symbol:
+            return False
+        if "_day" in normalized_symbol:
+            return True
+        return 6 <= observed_at.hour < 18
+
+    def _map_met_no_symbol_code(self, symbol_code: str | None) -> int:
+        normalized_symbol = (symbol_code or "").lower()
+        if "thunder" in normalized_symbol:
+            return 95
+        if "snow" in normalized_symbol or "sleet" in normalized_symbol:
+            if "heavy" in normalized_symbol:
+                return 75
+            if "light" in normalized_symbol:
+                return 71
+            return 73
+        if "rainshowers" in normalized_symbol:
+            if "heavy" in normalized_symbol:
+                return 81
+            return 80
+        if "rain" in normalized_symbol:
+            if "heavy" in normalized_symbol:
+                return 65
+            if "light" in normalized_symbol:
+                return 61
+            return 63
+        if "drizzle" in normalized_symbol:
+            if "heavy" in normalized_symbol:
+                return 55
+            if "light" in normalized_symbol:
+                return 51
+            return 53
+        if "fog" in normalized_symbol:
+            return 45
+        if "partlycloudy" in normalized_symbol:
+            return 2
+        if "fair" in normalized_symbol:
+            return 1
+        if "cloudy" in normalized_symbol:
+            return 3
+        return 0
+
     def _deserialize_forecast_days(self, forecast_json: str) -> list[dict[str, Any]]:
         try:
             payload = json.loads(forecast_json)
@@ -535,10 +737,15 @@ class WeatherService:
     def _is_forecast_snapshot_servable(self, fetched_at: datetime, stale_ttl_seconds: int) -> bool:
         return datetime.now(dt_timezone.utc) - self._coerce_utc_datetime(fetched_at) <= timedelta(seconds=stale_ttl_seconds)
 
-    async def _request_json(self, url: str, params: dict[str, Any]) -> dict[str, Any]:
+    async def _request_json(
+        self,
+        url: str,
+        params: dict[str, Any],
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any] | list[dict[str, Any]]:
         await self._wait_for_upstream_slot()
         async with httpx.AsyncClient(timeout=20.0) as client:
-            response = await client.get(url, params=params)
+            response = await client.get(url, params=params, headers=headers)
             response.raise_for_status()
         return response.json()
 
