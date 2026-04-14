@@ -1,10 +1,12 @@
 from typing import Annotated
-from fastapi import Depends, HTTPException, status, Request
+
 import jwt
+from fastapi import Depends, HTTPException, Request, status
 from jwt.exceptions import InvalidTokenError
+
 from app.config import get_settings
-from app.models.user import User
 from app.dependencies.session import SessionDep
+from app.models.user import User
 from app.repositories.user import UserRepository
 
 async def get_current_user(request:Request, db:SessionDep)->User:
@@ -19,9 +21,11 @@ async def get_current_user(request:Request, db:SessionDep)->User:
         raise credentials_exception
     try:
         payload = jwt.decode(token, get_settings().secret_key, algorithms=[get_settings().jwt_algorithm])
-        user_id = payload.get("sub",None)
+        user_id = int(payload.get("sub", 0))
     except InvalidTokenError as e:
         print("Invalid token error: ", e)
+        raise credentials_exception
+    except (TypeError, ValueError):
         raise credentials_exception
 
     repo = UserRepository(db)

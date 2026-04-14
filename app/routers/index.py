@@ -1,5 +1,6 @@
 from fastapi.responses import RedirectResponse
 from fastapi import Request, status
+from app.config import get_settings
 from app.dependencies.auth import IsUserLoggedIn, get_current_user, is_admin
 from app.dependencies.session import SessionDep
 from . import router
@@ -20,7 +21,7 @@ async def index_view(
     response.delete_cookie(
         key="access_token", 
         httponly=True,
-        samesite="none",
-        secure=True
+        samesite=get_settings().cookie_samesite,
+        secure=get_settings().cookie_secure
     )
     return response

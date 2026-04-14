@@ -35,7 +35,7 @@ async def login_action_ajax(
         key="access_token",
         value=access_token,
         httponly=True,
-        samesite="none",
-        secure=True,
+        samesite=get_settings().cookie_samesite,
+        secure=get_settings().cookie_secure,
     )
     return response

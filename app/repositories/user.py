@@ -1,9 +1,11 @@
-from sqlmodel import Session, select, func
-from app.models.user import UserBase, User
-from typing import Optional, Tuple
-from app.utilities.pagination import Pagination
-from app.schemas.user import UserUpdate
 import logging
+from typing import Optional, Tuple
+
+from sqlmodel import Session, func, select
+
+from app.models.user import User
+from app.schemas.user import UserCreate
+from app.utilities.pagination import Pagination
 
 logger = logging.getLogger(__name__)
 
@@ -11,9 +13,14 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, user_data: UserBase) -> Optional[User]:
+    def create(self, user_data: UserCreate, password_hash: str) -> Optional[User]:
         try:
-            user_db = User.model_validate(user_data)
+            user_db = User(
+                username=user_data.username,
+                email=user_data.email,
+                password_hash=password_hash,
+                role=user_data.role,
+            )
             self.db.add(user_db)
             self.db.commit()
             self.db.refresh(user_db)
@@ -41,21 +48,24 @@ class UserRepository:
     def get_by_username(self, username: str) -> Optional[User]:
         return self.db.exec(select(User).where(User.username == username)).one_or_none()
 
+    def get_by_email(self, email: str) -> Optional[User]:
+        return self.db.exec(select(User).where(User.email == email)).one_or_none()
+
     def get_by_id(self, user_id: int) -> Optional[User]:
         return self.db.get(User, user_id)
 
     def get_all_users(self) -> list[User]:
-        return self.db.exec(select(User)).all()
+        statement = select(User).order_by(User.created_at.desc())
+        return list(self.db.exec(statement).all())
 
-    def update_user(self, user_id:int, user_data: UserUpdate)->User:
-        user = self.db.get(User, user_id)
-        if not user:
-            raise Exception("Invalid user id given")
-        if user_data.username:
-            user.username = user_data.username
-        if user_data.email:
-            user.email = user_data.email
-        
+    def count_by_role(self, role: str) -> int:
+        statement = select(func.count()).where(User.role == role)
+        return int(self.db.exec(statement).one())
+
+    def update_user(self, user: User, changes: dict[str, object]) -> User:
+        for field, value in changes.items():
+            setattr(user, field, value)
+
         try:
             self.db.add(user)
             self.db.commit()
@@ -66,10 +76,7 @@ class UserRepository:
             self.db.rollback()
             raise
 
-    def delete_user(self, user_id: int):
-        user = self.db.get(User, user_id)
-        if not user:
-            raise Exception("User doesn't exist")
+    def delete_user(self, user: User) -> None:
         try:
             self.db.delete(user)
             self.db.commit()
