@@ -1,103 +1,52 @@
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
-
-{% block external_js %}
-
-{% endblock %}
-
-{% block internal_css %}
-<style>
-    body {
-        background-color: #f8f9fa;
-    }
-
-    .login-container {
-        min-height: 100vh;
-    }
-
-    .login-card {
-        border: none;
-        border-radius: 1rem;
-        overflow: hidden;
-    }
-
-    .login-image {
-        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        padding: 3rem;
-    }
-
-    .form-section {
-        padding: 3rem;
-    }
-
-    .btn-primary {
-        border-radius: 0.5rem;
-    }
-
-    .form-control {
-        border-radius: 0.5rem;
-    }
-</style>
-{% endblock %}
-
+{% block title %}StormScope Register{% endblock %}
+{% block body_class %}auth-shell{% endblock %}
 
 {% block content %}
+<div class="auth-layout">
+    <section class="auth-showcase">
+        <div class="eyebrow">Create your account</div>
+        <h1>Join StormScope</h1>
+        <p>Create your account to explore live weather, save important places, and follow major disaster records in one platform.</p>
+    </section>
 
-<div class="container login-container d-flex align-items-center justify-content-center">
-    <div class="card shadow-lg login-card col-lg-10">
-        <div class="row g-0">
-            <div class="col-lg-6 d-none d-lg-flex login-image">
-                <div class="text-center">
-                    <h2 class="mt-4 fw-bold">Registration</h2>
-                    <p class="lead">Create an account for the app</p>
+    <section class="auth-card">
+        <div class="eyebrow">New account</div>
+        <h2>Register</h2>
+
+        <form id="signUpForm" method="POST" class="auth-form">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control storm-input" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control storm-input" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="storm-password-field">
+                    <input type="password" class="form-control storm-input" id="password" name="password" required>
+                    <button
+                        class="storm-password-toggle"
+                        type="button"
+                        data-password-toggle
+                        data-password-target="password"
+                        aria-label="Show password"
+                        aria-pressed="false"
+                    >
+                        <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                    </button>
                 </div>
             </div>
-            <div class="col-lg-6 bg-white">
-                <div class="form-section">
-                    <h3 class="fw-bold mb-4">Register</h3>
-
-                    <form id="signUpForm" method="POST">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control form-control-md" id="username" name="username"
-                                required="required">
-                        </div>
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Email</label>
-                            <input type="email" class="form-control form-control-md" id="email" name="email"
-                                required="required">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control form-control-md" id="password" name="password"
-                                required>
-                        </div>
-
-                        <div class="d-grid mb-3">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                Register
-                            </button>
-                        </div>
-
-                        <div class="d-grid mb-3">
-                            <a class="btn btn-secondary btn-lg" href="{{url_for('login_view')}}" role="button">
-                                Back to Login
-                            </a>
-                        </div>
-                        {% for message in get_flashed_messages(request) %}
-                        <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
-                        {% endfor %}
-                    </form>
-
-                </div>
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-storm-primary btn-lg">Register</button>
+                <a class="btn btn-storm-secondary btn-lg" href="{{url_for('login_view')}}" role="button">Back to login</a>
             </div>
-
-        </div>
-    </div>
+            {% for message in get_flashed_messages(request) %}
+            <div class="alert alert-{{ message.type }} stormscope-alert mt-3" role="alert">{{ message.message }}</div>
+            {% endfor %}
+        </form>
+    </section>
 </div>
 {% endblock %}

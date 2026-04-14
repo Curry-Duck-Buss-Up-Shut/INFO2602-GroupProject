@@ -1,0 +1,76 @@
+{% extends "stormscope-page.html" %}
+
+{% block title %}StormScope Timeline{% endblock %}
+{% block page_title %}Disaster Timeline{% endblock %}
+
+{% block stormscope_page_content %}
+<section class="hero-panel">
+    <div class="hero-copy">
+        <div class="eyebrow">Timeline</div>
+        <h2>Follow major events through StormScope's disaster timeline</h2>
+        <p>
+            Explore the record layer behind StormScope, powered by EONET Live NASA Feed, and filter events to understand where major disaster activity has been tracked.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-storm-primary" href="/app">Back to dashboard</a>
+            <a class="btn btn-storm-secondary" href="/app/explorer">Open explorer</a>
+        </div>
+    </div>
+    <div class="hero-metrics">
+        <article class="metric-card">
+            <div class="metric-label">Internal records</div>
+            <div class="metric-value" id="metricDisasterCount">0</div>
+            <small>Records loaded for the current filter set</small>
+        </article>
+    </div>
+</section>
+
+<section class="storm-panel" id="timeline">
+    <div class="panel-header">
+        <div>
+            <div class="eyebrow">StormScope records (powered by EONET live NASA Feed)</div>
+            <h3>Filter and review the disaster timeline</h3>
+        </div>
+    </div>
+
+    <form id="disasterFilterForm" class="storm-form-grid timeline-filter-grid">
+        <div>
+            <label class="form-label" for="filterCountry">Country</label>
+            <input class="form-control storm-input" id="filterCountry" placeholder="Filter by country">
+        </div>
+        <div>
+            <label class="form-label" for="filterCategory">Category</label>
+            <select class="form-select storm-input" id="filterCategory">
+                <option value="">All categories</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label" for="filterSeverity">Severity</label>
+            <select class="form-select storm-input" id="filterSeverity">
+                <option value="">All severities</option>
+                <option value="Low">Low</option>
+                <option value="Moderate">Moderate</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+            </select>
+        </div>
+        <div class="button-row">
+            <button class="btn btn-storm-primary timeline-filter-button" type="submit">Apply filters</button>
+        </div>
+    </form>
+
+    <div id="disasterList" class="stack-list">
+        <div class="empty-state">Loading disaster timeline...</div>
+    </div>
+</section>
+
+{% if is_admin %}
+<section class="admin-callout">
+    <div>
+        <div class="eyebrow">Admin shortcut</div>
+        <h3>Open the admin desk to manage StormScope records.</h3>
+    </div>
+    <a class="btn btn-storm-primary" href="/admin">Open admin desk</a>
+</section>
+{% endif %}
+{% endblock %}

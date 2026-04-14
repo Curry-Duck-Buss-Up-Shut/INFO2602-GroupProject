@@ -1,0 +1,134 @@
+{% extends "stormscope-page.html" %}
+
+{% block title %}StormScope Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block stormscope_page_content %}
+<section class="hero-panel compact-hero">
+    <div class="hero-copy">
+        <div class="eyebrow">Profile</div>
+        <h2>Manage your StormScope account</h2>
+        <p>
+            Review your current account details, update your profile securely, and permanently delete your own account if needed.
+        </p>
+    </div>
+</section>
+
+<section class="content-grid profile-grid">
+    <article class="storm-panel">
+        <div class="panel-header">
+            <div>
+                <div class="eyebrow">Account details</div>
+                <h3>Update your username, email, or password</h3>
+            </div>
+        </div>
+
+        <form id="profileForm" class="storm-form-grid">
+            <div>
+                <label class="form-label" for="profileUsername">Username</label>
+                <input class="form-control storm-input" id="profileUsername" required>
+            </div>
+            <div>
+                <label class="form-label" for="profileEmail">Email</label>
+                <input class="form-control storm-input" id="profileEmail" type="email" required>
+            </div>
+            <div>
+                <label class="form-label" for="profileCurrentPassword">Current password</label>
+                <div class="storm-password-field">
+                    <input class="form-control storm-input" id="profileCurrentPassword" type="password" autocomplete="current-password">
+                    <button
+                        class="storm-password-toggle"
+                        type="button"
+                        data-password-toggle
+                        data-password-target="profileCurrentPassword"
+                        aria-label="Show current password"
+                        aria-pressed="false"
+                    >
+                        <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="form-label" for="profileNewPassword">New password</label>
+                <div class="storm-password-field">
+                    <input class="form-control storm-input" id="profileNewPassword" type="password" autocomplete="new-password" minlength="8">
+                    <button
+                        class="storm-password-toggle"
+                        type="button"
+                        data-password-toggle
+                        data-password-target="profileNewPassword"
+                        aria-label="Show new password"
+                        aria-pressed="false"
+                    >
+                        <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                    </button>
+                </div>
+            </div>
+            <div class="button-row grid-span-2">
+                <button class="btn btn-storm-primary" type="submit">Save profile</button>
+            </div>
+        </form>
+    </article>
+
+    <article class="storm-panel profile-summary-panel">
+        <div class="panel-header">
+            <div>
+                <div class="eyebrow">Profile summary</div>
+                <h3>Your Current Account</h3>
+            </div>
+        </div>
+
+        <div class="profile-identity">
+            <div class="profile-avatar">
+                <span class="material-symbols-outlined">person</span>
+            </div>
+            <div class="profile-identity-copy">
+                <h4 id="profileSummaryName">{{ user.username }}</h4>
+                <div id="profileSummaryEmail" class="profile-summary-text">{{ user.email }}</div>
+            </div>
+        </div>
+
+        <div class="profile-detail-list">
+            <div class="data-line"><span>Role</span><strong id="profileSummaryRole">{{ user.role.replace('_', ' ') }}</strong></div>
+            <div class="data-line"><span>Member since</span><strong id="profileSummaryCreated">Loading...</strong></div>
+        </div>
+    </article>
+</section>
+
+<section class="storm-panel profile-danger-panel">
+    <div class="panel-header">
+        <div>
+            <div class="eyebrow">Delete account</div>
+            <h3>Permanently remove your own account</h3>
+        </div>
+    </div>
+    <p class="profile-danger-copy">
+        This removes your login, clears your saved watchlist entries, and keeps any disaster records you created by detaching them from your user account.
+    </p>
+    <form id="deleteAccountForm" class="storm-form-grid">
+        <div>
+            <label class="form-label" for="deleteAccountUsername">Confirm username</label>
+            <input class="form-control storm-input" id="deleteAccountUsername" autocomplete="off" placeholder="Type your current username exactly" required>
+        </div>
+        <div>
+            <label class="form-label" for="deleteAccountPassword">Current password</label>
+            <div class="storm-password-field">
+                <input class="form-control storm-input" id="deleteAccountPassword" type="password" autocomplete="current-password" required>
+                <button
+                    class="storm-password-toggle"
+                    type="button"
+                    data-password-toggle
+                    data-password-target="deleteAccountPassword"
+                    aria-label="Show current password"
+                    aria-pressed="false"
+                >
+                    <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                </button>
+            </div>
+        </div>
+        <div class="button-row grid-span-2">
+            <button class="btn btn-storm-secondary profile-delete-button" type="submit">Delete my account</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

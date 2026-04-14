@@ -1,0 +1,12 @@
+{% extends "authenticated-base.html" %}
+
+{% block external_css %}{% endblock %}
+
+{% block external_js %}
+<script defer src="{{ url_for('static', path='js/stormscope.js')}}?v=20260413-logo-lightbox"></script>
+{% endblock %}
+
+{% block subpage_content %}
+<input type="hidden" id="isAdminUser" value="{{ 'true' if is_admin else 'false' }}">
+{% block stormscope_page_content %}{% endblock %}
+{% endblock %}

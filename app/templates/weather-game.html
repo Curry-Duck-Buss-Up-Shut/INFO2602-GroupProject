@@ -1,0 +1,63 @@
+{% extends "stormscope-page.html" %}
+
+{% block title %}StormScope Mini Game{% endblock %}
+{% block page_title %}Hot or Cold Duel{% endblock %}
+
+{% block stormscope_page_content %}
+<section class="hero-panel compact-hero">
+    <div class="hero-copy">
+        <div class="eyebrow">Mini game</div>
+        <h2>Think you can spot the warmer city faster than the forecast?</h2>
+        <p>
+            Compare cities, make your pick, and see whether your instincts can keep up with real conditions across the map.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-storm-primary" href="/app">Back to dashboard</a>
+            <a class="btn btn-storm-secondary" href="/app/explorer">Open explorer</a>
+            <a class="btn btn-storm-secondary" href="/app/timeline">Open timeline</a>
+        </div>
+    </div>
+</section>
+
+<section class="storm-panel weather-game-panel" id="weather-game">
+    <div class="panel-header">
+        <div>
+            <div class="eyebrow">Mini Game</div>
+            <h3>Hot or Cold Duel</h3>
+        </div>
+        <button id="newWeatherDuel" class="btn btn-storm-secondary" type="button">New duel</button>
+    </div>
+
+    <div class="weather-game-scoreboard">
+        <article class="metric-card">
+            <div class="metric-label">Correct picks</div>
+            <div class="metric-value" id="weatherGameScore">0</div>
+            <small>Total right answers</small>
+        </article>
+        <article class="metric-card">
+            <div class="metric-label">Rounds played</div>
+            <div class="metric-value" id="weatherGameRounds">0</div>
+            <small>Live duel attempts</small>
+        </article>
+        <article class="metric-card">
+            <div class="metric-label">Current streak</div>
+            <div class="metric-value" id="weatherGameStreak">0</div>
+            <small>Correct answers in a row</small>
+        </article>
+        <article class="metric-card" id="weatherGameCountdownCard">
+            <div class="metric-label">Next round in</div>
+            <div class="metric-value" id="weatherGameCountdownValue">7</div>
+            <small id="weatherGameCountdownLabel">seconds after your guess</small>
+        </article>
+    </div>
+
+    <div id="weatherGamePrompt" class="weather-game-prompt">Pick the warmer place based on live weather data.</div>
+    <div id="weatherGameTimer" class="weather-game-timer">Timer starts after you lock in a guess.</div>
+    <div id="weatherGameOptions" class="weather-game-options">
+        <div class="empty-state">Starting a new duel will load two cities and compare their live temperatures.</div>
+    </div>
+    <div id="weatherGameReveal" class="weather-game-reveal">
+        <div class="empty-state">The result breakdown will appear here after you choose a city.</div>
+    </div>
+</section>
+{% endblock %}
