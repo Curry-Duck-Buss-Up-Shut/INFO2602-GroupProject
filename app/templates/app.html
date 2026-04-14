@@ -18,9 +18,9 @@
 <section class="hero-panel" id="dashboard">
     <div class="hero-copy">
         <div class="eyebrow">Dashboard</div>
-        <h2>StormScope home base</h2>
+        <h2>Your world, tracked through StormScope</h2>
         <p>
-            Use the explorer for current weather and the 7-day forecast, then return here to jump between the rest of the app quickly.
+            Explore live weather, keep important cities close, and follow major disaster records from one home base built for fast awareness.
         </p>
         <div class="hero-actions">
             <a class="btn btn-storm-primary" href="/app/explorer">Open explorer</a>
@@ -30,27 +30,51 @@
     </div>
     <div class="hero-metrics">
         <article class="metric-card">
-            <div class="metric-label">Home mode</div>
-            <div class="metric-value">Static</div>
-            <small>Lightweight overview page</small>
+            <div class="metric-label">Tracked cities</div>
+            <div class="metric-value" id="metricWatchlistCount">0</div>
+            <small>Personal watchlist entries</small>
         </article>
         <article class="metric-card">
-            <div class="metric-label">Weather access</div>
-            <div class="metric-value">Explorer</div>
-            <small>Open a location to load details</small>
+            <div class="metric-label">StormScope records</div>
+            <div class="metric-value" id="metricDisasterCount">0</div>
+            <small>Disaster records powered by EONET NASA Live Feed</small>
         </article>
     </div>
 </section>
 
-<section class="storm-panel">
-    <div class="panel-header">
+<section class="map-hero-shell">
+    <div class="map-hero-header">
         <div>
-            <div class="eyebrow">Overview</div>
-            <h3>Choose where you want to go next</h3>
+            <div class="eyebrow">Map search</div>
+            <h3>Search countries or cities, then let the globe take over the page.</h3>
         </div>
     </div>
-    <div class="empty-state">
-        Open the explorer to load weather for a specific place, or use the links below to move through the rest of StormScope.
+
+    <div class="map-stage">
+        <form id="weatherSearchForm" class="floating-search-form">
+            <label class="visually-hidden" for="citySearch">Search countries or cities</label>
+            <div class="floating-search-inner">
+                <span class="material-symbols-outlined">search</span>
+                <input class="form-control storm-input floating-search-input" id="citySearch" name="citySearch" placeholder="Search countries or cities..." required>
+                <button class="btn btn-storm-primary floating-search-button" type="submit">Search</button>
+            </div>
+        </form>
+        <div id="searchResults" class="search-results floating-results"></div>
+        <div class="globe-stage-shell hero-map">
+            <div id="weatherGlobe" class="weather-globe"></div>
+            <div class="globe-overlay-panel">
+                <div class="eyebrow">Live Earth</div>
+                <h4 id="globeFocusTitle">StormScope live globe</h4>
+                <p id="globeFocusCopy">Move between your selected place, personal watchlist, and active event markers without leaving the map.</p>
+                <div id="globeFocusMeta" class="globe-focus-meta">Saved places and live events wrapped around the globe.</div>
+                <a id="dashboardGlobeAction" class="btn btn-storm-secondary globe-overlay-action" href="/app/explorer#detailMap">Open Detailed Map</a>
+            </div>
+            <div class="globe-legend">
+                <span><i class="legend-dot legend-dot-city"></i> Selected place</span>
+                <span><i class="legend-dot legend-dot-watchlist"></i> Saved locations</span>
+                <span><i class="legend-dot legend-dot-nasa"></i> NASA live events</span>
+            </div>
+        </div>
     </div>
 </section>
 

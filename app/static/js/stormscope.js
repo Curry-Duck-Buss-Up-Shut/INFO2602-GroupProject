@@ -1969,6 +1969,10 @@ const StormScopeApp = (() => {
                 closeMobileNav();
             });
         });
+        document.getElementById("dashboardGlobeAction")?.addEventListener("click", () => {
+            if (!state.selectedCity) return;
+            queuePendingExplorerCity(state.selectedCity);
+        });
         document.getElementById("weatherSearchForm")?.addEventListener("submit", handleSearchSubmit);
         document.getElementById("saveLocationForm")?.addEventListener("submit", saveSelectedCity);
         document.getElementById("profileForm")?.addEventListener("submit", handleProfileSubmit);
