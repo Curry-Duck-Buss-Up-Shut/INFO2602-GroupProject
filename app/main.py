@@ -6,14 +6,11 @@ from app.routers import templates, static_files, router, api_router
 from app.config import get_settings
 from contextlib import asynccontextmanager
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from app.database import create_db_and_tables
-    create_db_and_tables()
+    from app.database import initialize_database
+    initialize_database()
     yield
-
-
 
 app = FastAPI(middleware=[
     Middleware(SessionMiddleware, secret_key=get_settings().secret_key)

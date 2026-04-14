@@ -38,6 +38,7 @@ class DisasterEventUpdate(SQLModel):
 class DisasterEventResponse(DisasterEventBase):
     id: int
     created_by: Optional[int]
+    last_synced_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
 
