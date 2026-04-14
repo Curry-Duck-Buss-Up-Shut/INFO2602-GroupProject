@@ -1,0 +1,2178 @@
+:root {
+    --storm-night: #0b1726;
+    --storm-panel: rgba(9, 24, 39, 0.78);
+    --storm-border: rgba(167, 204, 255, 0.16);
+    --storm-text: #f3f7fb;
+    --storm-muted: #aab9cc;
+    --storm-accent: #64d2ff;
+    --storm-sand: #f0c27b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--storm-text);
+    font-family: "Sora", sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(100, 210, 255, 0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(240, 194, 123, 0.14), transparent 28%),
+        linear-gradient(180deg, #08111d 0%, #102338 52%, #0a1624 100%);
+}
+
+a {
+    color: inherit;
+}
+
+.stormscope-toast-header {
+    background: rgba(255, 255, 255, 0.88);
+}
+
+.eyebrow {
+    margin-bottom: 0.45rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--storm-accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.page-title,
+.hero-copy h2,
+.auth-showcase h1,
+.auth-card h2,
+.storm-panel h3,
+.storm-panel h4 {
+    font-family: "Sora", sans-serif;
+}
+
+.btn-storm-primary,
+.btn-storm-secondary {
+    border-radius: 999px;
+    padding: 0.8rem 1.3rem;
+    font-weight: 700;
+    border: 0;
+}
+
+.btn-storm-primary {
+    color: #082033;
+    background: linear-gradient(135deg, var(--storm-accent), #a7f0ff);
+}
+
+.btn-storm-primary:hover {
+    color: #082033;
+    background: linear-gradient(135deg, #7ce0ff, #bff4ff);
+}
+
+.btn-storm-secondary {
+    color: var(--storm-text);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--storm-border);
+}
+
+.btn-storm-secondary:hover {
+    color: var(--storm-text);
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.storm-input {
+    min-height: 3rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(7, 20, 34, 0.7);
+    color: var(--storm-text);
+}
+
+.storm-input:focus {
+    background: rgba(7, 20, 34, 0.88);
+    color: var(--storm-text);
+    border-color: rgba(100, 210, 255, 0.6);
+    box-shadow: 0 0 0 0.2rem rgba(100, 210, 255, 0.16);
+}
+
+.storm-input::placeholder {
+    color: rgba(243, 247, 251, 0.5);
+}
+
+.storm-input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+    cursor: pointer;
+}
+
+.storm-password-field {
+    display: flex;
+    align-items: stretch;
+    min-height: 3rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(7, 20, 34, 0.7);
+    overflow: hidden;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.storm-password-field:focus-within {
+    background: rgba(7, 20, 34, 0.88);
+    border-color: rgba(100, 210, 255, 0.6);
+    box-shadow: 0 0 0 0.2rem rgba(100, 210, 255, 0.16);
+}
+
+.storm-password-field .storm-input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 3rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding-right: 0.6rem;
+}
+
+.storm-password-field .storm-input:focus {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.storm-password-toggle {
+    flex: 0 0 auto;
+    width: 3rem;
+    min-height: 3rem;
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    background: transparent;
+    color: rgba(243, 247, 251, 0.7);
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.storm-password-toggle:hover,
+.storm-password-toggle:focus-visible {
+    color: var(--storm-text);
+    background: rgba(255, 255, 255, 0.06);
+    border-left-color: rgba(255, 255, 255, 0.14);
+}
+
+.storm-password-toggle:focus-visible {
+    outline: none;
+}
+
+.storm-password-toggle .material-symbols-outlined {
+    font-size: 1.15rem;
+}
+
+.storm-input[type="password"]::-ms-reveal,
+.storm-input[type="password"]::-ms-clear {
+    filter: brightness(0) invert(1);
+}
+
+.stormscope-page {
+    min-height: 100vh;
+}
+
+.stormscope-layout {
+    display: flex;
+    min-height: 100vh;
+    transition: filter 0.24s ease, transform 0.24s ease;
+}
+
+body.stormscope-mobile-nav-open,
+body.stormscope-logo-modal-open {
+    overflow: hidden;
+}
+
+body.stormscope-logo-modal-open .stormscope-layout {
+    filter: blur(12px);
+    transform: scale(0.99);
+    pointer-events: none;
+    user-select: none;
+}
+
+.stormscope-sidebar {
+    width: 304px;
+    flex: 0 0 304px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.65rem;
+    padding: 0.85rem 0.85rem 0.9rem;
+    background: rgba(6, 16, 26, 0.82);
+    border-right: 1px solid var(--storm-border);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.stormscope-sidebar-brand-row,
+.stormscope-topbar-main {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.stormscope-sidebar-brand-row {
+    justify-content: space-between;
+}
+
+.stormscope-mobile-nav-toggle,
+.stormscope-sidebar-close,
+.stormscope-sidebar-backdrop {
+    display: none;
+}
+
+.stormscope-mobile-nav-toggle,
+.stormscope-sidebar-close {
+    width: 2.65rem;
+    height: 2.65rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--storm-text);
+}
+
+.stormscope-sidebar-close {
+    width: 2.4rem;
+    height: 2.4rem;
+}
+
+.stormscope-mobile-nav-toggle:hover,
+.stormscope-sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.stormscope-sidebar-main {
+    flex: 0 1 auto;
+    min-height: auto;
+    overflow: visible;
+    padding-right: 0;
+}
+
+.stormscope-brand {
+    display: flex;
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.stormscope-brand-logo-lockup {
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.stormscope-brand-trigger {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.stormscope-brand-trigger:hover {
+    transform: translateY(-1px);
+}
+
+.stormscope-brand-trigger:focus-visible {
+    outline: 2px solid rgba(100, 210, 255, 0.78);
+    outline-offset: 4px;
+    border-radius: 1rem;
+}
+
+.stormscope-brand-card {
+    margin-bottom: 0.75rem;
+    padding: 0.68rem;
+    border-radius: 1.05rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.stormscope-brand-note {
+    margin-top: 0.75rem;
+    color: rgba(243, 247, 251, 0.62);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.stormscope-brand-logo {
+    display: block;
+    width: 2.35rem;
+    height: 2.35rem;
+    object-fit: cover;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 14px 30px rgba(100, 210, 255, 0.18);
+}
+
+.stormscope-brand-trigger:hover .stormscope-brand-logo,
+.stormscope-brand-trigger:focus-visible .stormscope-brand-logo {
+    box-shadow: 0 18px 34px rgba(100, 210, 255, 0.28);
+}
+
+.stormscope-brand-mark {
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 0.95rem;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: #052033;
+    background: linear-gradient(135deg, var(--storm-accent), var(--storm-sand));
+    box-shadow: 0 14px 30px rgba(100, 210, 255, 0.18);
+}
+
+.stormscope-brand-name {
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 0.3rem;
+}
+
+.stormscope-brand-subtitle {
+    color: var(--storm-muted);
+    font-size: 0.78rem;
+    line-height: 1.22;
+    max-width: 10.5rem;
+}
+
+.stormscope-brand-copy {
+    max-width: 11rem;
+    min-width: 0;
+}
+
+.stormscope-logo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1110;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background: rgba(2, 8, 15, 0.42);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.stormscope-logo-modal-dialog {
+    position: relative;
+    width: min(92vw, 460px);
+}
+
+.stormscope-logo-modal-panel {
+    padding: 1rem;
+    border-radius: 1.6rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background:
+        radial-gradient(circle at top, rgba(100, 210, 255, 0.2), transparent 60%),
+        linear-gradient(180deg, rgba(11, 24, 37, 0.94), rgba(5, 12, 20, 0.94));
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.42);
+}
+
+.stormscope-logo-modal-image {
+    display: block;
+    width: min(100%, 380px);
+    max-height: min(72vh, 380px);
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: 1.3rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 24px 52px rgba(84, 187, 224, 0.22);
+}
+
+.stormscope-logo-modal-close {
+    position: absolute;
+    top: -0.8rem;
+    right: -0.8rem;
+    width: 2.7rem;
+    height: 2.7rem;
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    border-radius: 999px;
+    color: #f7fbff;
+    background: rgba(7, 18, 29, 0.96);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.stormscope-logo-modal-close:hover,
+.stormscope-logo-modal-close:focus-visible {
+    transform: scale(1.04);
+    background: rgba(11, 28, 43, 0.98);
+}
+
+.stormscope-logo-modal-close:focus-visible {
+    outline: 2px solid rgba(100, 210, 255, 0.84);
+    outline-offset: 3px;
+}
+
+#stormscopeSidebarNav,
+.stormscope-sidebar .stormscope-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+#stormscopeSidebarNav {
+    padding: 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 1.15rem;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.stormscope-sidebar a.stormscope-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.54rem 0.62rem;
+    text-decoration: none !important;
+    color: var(--storm-muted);
+    border-radius: 0.88rem;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    line-height: 1.1;
+    white-space: normal;
+}
+
+.stormscope-sidebar a.stormscope-sidebar-link:hover,
+.stormscope-sidebar a.stormscope-sidebar-link.active {
+    color: var(--storm-text);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(3px);
+}
+
+.stormscope-link-icon {
+    flex: 0 0 auto;
+    width: 1.8rem;
+    height: 1.8rem;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    color: var(--storm-accent);
+    background: rgba(100, 210, 255, 0.12);
+    font-size: 0.88rem;
+}
+
+.stormscope-sidebar a.stormscope-sidebar-link.active .stormscope-link-icon {
+    color: #082033;
+    background: linear-gradient(135deg, var(--storm-accent), #d4f7ff);
+}
+
+.stormscope-link-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-decoration: none !important;
+}
+
+.stormscope-link-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    min-width: 0;
+}
+
+.stormscope-link-meta {
+    color: rgba(243, 247, 251, 0.55);
+    font-size: 0.66rem;
+    line-height: 1.16;
+}
+
+.stormscope-sidebar a.stormscope-sidebar-link.active .stormscope-link-meta,
+.stormscope-sidebar a.stormscope-sidebar-link:hover .stormscope-link-meta {
+    color: rgba(243, 247, 251, 0.8);
+}
+
+.stormscope-user-chip {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+    padding: 0.72rem 0.78rem;
+    border-radius: 1rem;
+    border: 1px solid var(--storm-border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--storm-text);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.stormscope-user-chip:hover,
+.stormscope-user-chip:focus-visible,
+.stormscope-user-chip.active {
+    color: var(--storm-text);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(3px);
+}
+
+.stormscope-user-chip:focus-visible {
+    outline: 2px solid rgba(100, 210, 255, 0.45);
+    outline-offset: 2px;
+}
+
+.stormscope-user-chip small {
+    color: rgba(243, 247, 251, 0.72);
+}
+
+.stormscope-sidebar-footer {
+    flex: 0 0 auto;
+    margin-top: auto;
+    padding-top: 0;
+}
+
+.logout-link {
+    color: #ffd0ca;
+    margin-top: 0;
+}
+
+.stormscope-main {
+    flex: 1;
+    min-width: 0;
+    padding: 1.75rem;
+}
+
+.stormscope-topbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1.6rem;
+}
+
+.stormscope-role-badge {
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    background: rgba(100, 210, 255, 0.12);
+    color: var(--storm-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.stormscope-alert {
+    border: 0;
+    border-radius: 1rem;
+}
+
+.hero-panel,
+.storm-panel,
+.admin-callout,
+.auth-showcase,
+.auth-card,
+.auth-showcase-card {
+    border: 1px solid var(--storm-border);
+    background: var(--storm-panel);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(18px);
+}
+
+.hero-panel,
+.storm-panel,
+.admin-callout,
+.auth-showcase,
+.auth-card {
+    border-radius: 1.8rem;
+    padding: 1.6rem;
+}
+
+.hero-panel {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1.4rem;
+}
+
+.compact-hero {
+    grid-template-columns: 1fr;
+}
+
+.hero-copy h2 {
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+}
+
+.hero-copy p {
+    color: var(--storm-muted);
+    max-width: 56rem;
+    font-size: 1.02rem;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+}
+
+.hero-metrics {
+    display: grid;
+    gap: 1rem;
+}
+
+.metric-card {
+    border-radius: 1.4rem;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metric-label {
+    color: var(--storm-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+    margin-bottom: 0.55rem;
+}
+
+.metric-value {
+    font-size: 2.3rem;
+    font-weight: 700;
+}
+
+.content-grid,
+.explorer-grid,
+.admin-grid,
+.page-link-grid {
+    display: grid;
+    gap: 1.3rem;
+}
+
+.content-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 1.4rem;
+}
+
+.explorer-watchlist-grid {
+    align-items: start;
+}
+
+.explorer-dashboard-panel,
+.explorer-watchlist-panel {
+    align-self: start;
+    height: 36rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.explorer-dashboard-panel #watchlistSnapshot,
+.explorer-watchlist-panel #watchlistContainer {
+    max-height: calc(36rem - 5.75rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.35rem;
+    min-width: 0;
+    scrollbar-gutter: stable;
+    align-content: start;
+}
+
+.explorer-dashboard-panel #watchlistSnapshot::-webkit-scrollbar,
+.explorer-watchlist-panel #watchlistContainer::-webkit-scrollbar {
+    width: 0.45rem;
+}
+
+.explorer-dashboard-panel #watchlistSnapshot::-webkit-scrollbar-thumb,
+.explorer-watchlist-panel #watchlistContainer::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(100, 210, 255, 0.35);
+}
+
+.explorer-dashboard-panel #watchlistSnapshot {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.explorer-watchlist-panel .watchlist-card {
+    padding: 0.8rem;
+    min-width: 0;
+}
+
+.explorer-watchlist-panel .watchlist-card .panel-header {
+    margin-bottom: 0.8rem;
+}
+
+.explorer-watchlist-panel .watchlist-card .panel-header > div,
+.explorer-watchlist-panel .watchlist-card .button-row,
+.explorer-watchlist-panel .watchlist-card .text-muted {
+    min-width: 0;
+}
+
+.explorer-watchlist-panel .watchlist-card h4 {
+    font-size: 1.05rem;
+}
+
+.explorer-watchlist-panel .watchlist-card .text-muted {
+    overflow-wrap: anywhere;
+}
+
+.explorer-watchlist-panel .watchlist-card .storm-form-grid {
+    gap: 0.75rem;
+}
+
+.explorer-watchlist-panel .watchlist-card .form-label {
+    margin-bottom: 0.35rem;
+    font-size: 0.84rem;
+}
+
+.explorer-watchlist-panel .watchlist-card .storm-input {
+    min-height: 2.55rem;
+}
+
+.explorer-watchlist-panel .watchlist-card .button-row {
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.explorer-watchlist-panel .watchlist-card .btn-storm-primary,
+.explorer-watchlist-panel .watchlist-card .btn-storm-secondary {
+    padding: 0.65rem 1rem;
+}
+
+.page-link-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 1.4rem;
+}
+
+.explorer-grid,
+.admin-grid {
+    grid-template-columns: 1.1fr 1fr;
+}
+
+.admin-grid {
+    gap: 1.75rem;
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+
+.admin-grid .storm-panel {
+    padding: 1.55rem;
+    min-width: 0;
+    height: 100%;
+}
+
+.admin-grid > .storm-panel:first-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-records-panel {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.admin-records-panel #adminDisasterList {
+    flex: 1;
+    min-height: 0;
+    max-height: min(44rem, calc(100vh - 18rem));
+    align-content: start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.35rem;
+    scrollbar-gutter: stable;
+}
+
+.admin-records-panel #adminDisasterList::-webkit-scrollbar {
+    width: 0.45rem;
+}
+
+.admin-records-panel #adminDisasterList::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(100, 210, 255, 0.35);
+}
+
+.profile-grid {
+    align-items: start;
+}
+
+.profile-summary-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.profile-avatar {
+    width: 3.4rem;
+    height: 3.4rem;
+    display: grid;
+    place-items: center;
+    border-radius: 1.15rem;
+    color: #082033;
+    background: linear-gradient(135deg, var(--storm-accent), var(--storm-sand));
+}
+
+.profile-avatar .material-symbols-outlined {
+    font-size: 1.55rem;
+}
+
+.profile-identity-copy {
+    min-width: 0;
+}
+
+.profile-summary-text,
+.profile-summary-note,
+.profile-danger-copy,
+.admin-users-copy,
+.admin-user-created {
+    color: var(--storm-muted);
+    line-height: 1.55;
+}
+
+.profile-detail-list {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.profile-danger-panel {
+    margin-top: 1.4rem;
+}
+
+.profile-delete-button,
+.profile-delete-button:hover,
+.profile-delete-button:focus-visible {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #b91c1c, #ef4444) !important;
+    border-color: rgba(255, 120, 120, 0.4) !important;
+}
+
+.profile-delete-button:hover,
+.profile-delete-button:focus-visible {
+    background: linear-gradient(135deg, #991b1b, #dc2626) !important;
+    border-color: rgba(255, 140, 140, 0.46) !important;
+}
+
+.admin-users-panel {
+    margin-top: 1.4rem;
+}
+
+.admin-users-header {
+    align-items: start;
+}
+
+#adminUserList {
+    max-height: 36rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.35rem;
+    scrollbar-gutter: stable;
+}
+
+#adminUserList::-webkit-scrollbar {
+    width: 0.45rem;
+}
+
+#adminUserList::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(100, 210, 255, 0.35);
+}
+
+.admin-user-card {
+    min-width: 0;
+}
+
+.admin-user-email-text {
+    color: #ffffff;
+    overflow-wrap: anywhere;
+}
+
+.admin-user-card .storm-input:disabled,
+.admin-user-card .storm-input[disabled] {
+    background: rgba(255, 255, 255, 0.86);
+    color: #0b1726;
+    -webkit-text-fill-color: #0b1726;
+    border-color: rgba(255, 255, 255, 0.32);
+    opacity: 1;
+}
+
+.admin-user-card .btn-storm-primary:disabled,
+.admin-user-card .btn-storm-primary[disabled] {
+    color: #082033;
+}
+
+.admin-user-role-badge-admin {
+    background: rgba(100, 210, 255, 0.12);
+    color: var(--storm-accent);
+}
+
+.admin-user-role-badge-member {
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(243, 247, 251, 0.82);
+}
+
+.admin-user-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-user-card .button-row {
+    flex-wrap: wrap;
+}
+
+.admin-user-delete,
+.admin-user-delete:hover,
+.admin-user-delete:focus-visible {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #b91c1c, #ef4444) !important;
+    border-color: rgba(255, 120, 120, 0.4) !important;
+}
+
+.admin-user-delete:hover,
+.admin-user-delete:focus-visible {
+    background: linear-gradient(135deg, #991b1b, #dc2626) !important;
+    border-color: rgba(255, 140, 140, 0.46) !important;
+}
+
+.feature-link-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.feature-link-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(100, 210, 255, 0.28);
+    background: rgba(12, 29, 46, 0.88);
+}
+
+.feature-link-top {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 0.9rem;
+}
+
+.feature-link-icon {
+    width: 2.7rem;
+    height: 2.7rem;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    color: #082033;
+    background: linear-gradient(135deg, var(--storm-accent), var(--storm-sand));
+}
+
+.feature-link-card p {
+    flex: 1;
+    color: var(--storm-muted);
+    line-height: 1.6;
+}
+
+.feature-link-action {
+    display: inline-flex;
+    margin-top: auto;
+    padding-top: 0.9rem;
+    font-weight: 700;
+    color: var(--storm-accent);
+}
+.map-hero-shell {
+    margin-bottom: 1.4rem;
+}
+
+.map-hero-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.map-stage {
+    position: relative;
+    padding-top: 4.2rem;
+}
+
+.hero-map {
+    min-height: 620px;
+    border-radius: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+.globe-stage-shell {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(100, 210, 255, 0.2), transparent 28%),
+        radial-gradient(circle at 80% 18%, rgba(240, 194, 123, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(5, 15, 26, 0.92), rgba(9, 22, 36, 0.98));
+}
+
+.weather-globe {
+    position: absolute;
+    inset: 0;
+}
+
+.weather-globe canvas {
+    display: block;
+}
+
+.globe-overlay-panel {
+    position: absolute;
+    left: 1.4rem;
+    bottom: 1.4rem;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: min(420px, calc(100% - 2.8rem));
+    padding: 1.15rem 1.2rem;
+    border-radius: 1.45rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(7, 19, 31, 0.74);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+}
+
+.globe-overlay-panel h4 {
+    margin-bottom: 0.6rem;
+}
+
+.globe-overlay-panel p {
+    margin-bottom: 0.75rem;
+    color: var(--storm-muted);
+    line-height: 1.6;
+}
+
+.globe-focus-meta {
+    color: rgba(243, 247, 251, 0.78);
+    font-size: 0.9rem;
+}
+
+.globe-overlay-action {
+    display: inline-flex;
+    align-self: flex-end;
+    margin-top: 0.75rem;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.82rem;
+    text-decoration: none;
+}
+
+.globe-legend {
+    position: absolute;
+    right: 1.4rem;
+    bottom: 1.4rem;
+    z-index: 6;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    gap: 0.75rem;
+    max-width: 460px;
+}
+
+.globe-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(7, 19, 31, 0.7);
+    color: rgba(243, 247, 251, 0.78);
+    font-size: 0.84rem;
+}
+
+.legend-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.legend-dot-city {
+    background: #64d2ff;
+    box-shadow: 0 0 14px rgba(100, 210, 255, 0.5);
+}
+
+.legend-dot-watchlist {
+    background: #f0c27b;
+    box-shadow: 0 0 14px rgba(240, 194, 123, 0.45);
+}
+
+.legend-dot-nasa {
+    background: #ff7b54;
+    box-shadow: 0 0 14px rgba(255, 123, 84, 0.45);
+}
+
+.floating-search-form {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 10;
+    width: min(920px, calc(100% - 2rem));
+    transform: translateX(-50%);
+}
+
+.floating-search-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.7rem 0.8rem 0.7rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(5, 18, 29, 0.84);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(20px);
+}
+
+.floating-search-input {
+    flex: 1;
+    min-height: 3.6rem;
+    border: 0;
+    background: transparent;
+    box-shadow: none !important;
+}
+
+.floating-search-button {
+    min-width: 140px;
+}
+
+.floating-results {
+    justify-content: center;
+    margin-top: 1.2rem;
+    padding: 0 1rem;
+}
+
+.storm-panel {
+    border-radius: 1.5rem;
+    padding: 1.35rem;
+}
+
+.nested-panel {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stack-list,
+.weather-snapshot-grid,
+.forecast-grid {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.weather-snapshot-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.forecast-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.storm-card,
+.forecast-card,
+.timeline-card,
+.watchlist-card,
+.nasa-card {
+    border-radius: 1.2rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.storm-card h4,
+.watchlist-card h4,
+.timeline-card h4,
+.nasa-card h4 {
+    margin-bottom: 0.45rem;
+}
+
+.timeline-card-topline {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.record-source-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.34rem 0.62rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transform: translateY(-3px);
+}
+
+.record-source-badge-manual {
+    background: rgba(100, 210, 255, 0.12);
+    color: var(--storm-accent);
+}
+
+.record-source-badge-nasa {
+    background: rgba(255, 123, 84, 0.14);
+    color: #ffb39a;
+}
+
+.admin-record-note {
+    margin: 0.75rem 0 0.2rem;
+    color: #ffffff;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.forecast-card {
+    min-width: 0;
+}
+
+.forecast-card h4 {
+    margin-bottom: 0.55rem;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.weather-card-top,
+.forecast-card-top,
+.weather-snapshot-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.9rem;
+}
+
+.weather-card-top {
+    align-items: center;
+    margin-bottom: 0.95rem;
+}
+
+.forecast-card-top,
+.weather-snapshot-header {
+    margin-bottom: 0.8rem;
+}
+
+.weather-card-heading,
+.weather-snapshot-header > div {
+    min-width: 0;
+}
+
+.weather-card-heading h4,
+.weather-snapshot-header h4 {
+    margin-bottom: 0.25rem;
+}
+
+.weather-snapshot-location {
+    color: var(--storm-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.weather-icon-badge {
+    width: 2.85rem;
+    height: 2.85rem;
+    flex: 0 0 auto;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 1rem;
+    border: 1px solid rgba(100, 210, 255, 0.18);
+    background: linear-gradient(135deg, rgba(100, 210, 255, 0.22), rgba(240, 194, 123, 0.18));
+    color: #dff9ff;
+    font-size: 1.1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.weather-icon-badge-compact {
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 0.9rem;
+    font-size: 0.98rem;
+}
+
+.data-label-with-icon,
+.weather-inline-label,
+.weather-comparison-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.weather-inline-icon {
+    width: 1rem;
+    flex: 0 0 auto;
+    text-align: center;
+    color: var(--storm-accent);
+}
+
+.watchlist-snapshot-card {
+    width: 100%;
+    text-align: left;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.watchlist-snapshot-card:hover,
+.watchlist-snapshot-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(100, 210, 255, 0.32);
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+
+.nasa-live-section {
+    margin-bottom: 1.4rem;
+}
+
+.nasa-live-header {
+    align-items: start;
+}
+
+.nasa-live-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: end;
+}
+
+.nasa-feed-status {
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--storm-muted);
+    font-size: 0.88rem;
+}
+
+.nasa-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.nasa-filter-pill {
+    transition: all 0.2s ease;
+}
+
+.nasa-filter-pill.active {
+    color: #082033;
+    background: linear-gradient(135deg, var(--storm-accent), #d7f8ff);
+    border-color: transparent;
+}
+
+.nasa-feed-meta {
+    display: grid;
+    grid-template-columns: minmax(220px, 260px) 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.nasa-meta-card {
+    height: 100%;
+}
+
+.nasa-meta-copy {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1.1rem 1.25rem;
+    border-radius: 1.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--storm-muted);
+    line-height: 1.6;
+}
+
+.nasa-feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.nasa-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    min-height: 100%;
+}
+
+.nasa-card-top {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 0.8rem;
+}
+
+.nasa-category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.72rem;
+    border-radius: 999px;
+    background: rgba(100, 210, 255, 0.12);
+    color: var(--storm-accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.nasa-card-title {
+    font-size: 1.08rem;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.nasa-card-copy {
+    color: var(--storm-muted);
+    font-size: 0.94rem;
+    line-height: 1.55;
+}
+
+.nasa-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.nasa-link {
+    color: var(--storm-accent);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.nasa-link:hover {
+    color: #bff4ff;
+}
+
+.weather-map {
+    min-height: 420px;
+    border-radius: 1.2rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.detail-map {
+    min-height: 360px;
+    margin-bottom: 0.9rem;
+    background: rgba(7, 20, 34, 0.45);
+}
+
+.detail-map-caption {
+    color: var(--storm-muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.weather-game-panel {
+    margin-bottom: 1.4rem;
+}
+
+#newWeatherDuel {
+    background: linear-gradient(135deg, #b91c1c, #ef4444);
+    border-color: rgba(255, 120, 120, 0.4);
+}
+
+#newWeatherDuel,
+.timeline-filter-button {
+    background: linear-gradient(135deg, #b91c1c, #ef4444);
+    border-color: rgba(255, 120, 120, 0.4);
+}
+
+.timeline-filter-button,
+.timeline-filter-button:hover {
+    color: #ffffff;
+}
+
+#newWeatherDuel:hover {
+    background: linear-gradient(135deg, #991b1b, #dc2626);
+    border-color: rgba(255, 140, 140, 0.46);
+}
+
+#newWeatherDuel:hover,
+.timeline-filter-button:hover {
+    background: linear-gradient(135deg, #991b1b, #dc2626);
+    border-color: rgba(255, 140, 140, 0.46);
+}
+
+.watchlist-delete-danger.btn,
+.watchlist-delete-danger.btn:hover,
+.watchlist-delete-danger.btn:focus-visible {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #b91c1c, #ef4444) !important;
+    border-color: rgba(255, 120, 120, 0.4) !important;
+}
+
+.watchlist-delete-danger.btn:hover,
+.watchlist-delete-danger.btn:focus-visible {
+    background: linear-gradient(135deg, #991b1b, #dc2626) !important;
+    border-color: rgba(255, 140, 140, 0.46) !important;
+}
+
+.weather-game-scoreboard {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@keyframes stormscopeCountdownPulse {
+    0% {
+        box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+    }
+    50% {
+        box-shadow: 0 0 28px rgba(239, 68, 68, 0.28);
+    }
+    100% {
+        box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+#weatherGameCountdownCard.active {
+    border-color: rgba(248, 113, 113, 0.48);
+    background: linear-gradient(180deg, rgba(127, 29, 29, 0.42), rgba(69, 10, 10, 0.34));
+    box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.12), 0 0 34px rgba(239, 68, 68, 0.18);
+    animation: stormscopeCountdownPulse 1.25s ease-in-out infinite;
+}
+
+#weatherGameCountdownCard.active .metric-label,
+#weatherGameCountdownCard.active small {
+    color: rgba(254, 226, 226, 0.88);
+}
+
+#weatherGameCountdownCard.active .metric-value {
+    color: #fff5f5;
+}
+
+.weather-game-prompt {
+    margin-bottom: 1rem;
+    color: rgba(243, 247, 251, 0.86);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.weather-game-timer {
+    display: flex;
+    align-items: center;
+    min-height: 3.2rem;
+    margin-bottom: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--storm-muted);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.weather-game-timer.active {
+    border-color: rgba(100, 210, 255, 0.28);
+    background: rgba(100, 210, 255, 0.1);
+    color: var(--storm-text);
+}
+
+.weather-game-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.weather-game-choice {
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.35rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--storm-text);
+    padding: 1.1rem;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.weather-game-choice:hover {
+    transform: translateY(-2px);
+    border-color: rgba(100, 210, 255, 0.32);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.weather-game-choice:disabled {
+    opacity: 1;
+    cursor: default;
+}
+
+.weather-game-choice.correct {
+    border-color: rgba(113, 245, 176, 0.48);
+    background: rgba(113, 245, 176, 0.12);
+}
+
+.weather-game-choice.wrong {
+    border-color: rgba(255, 123, 84, 0.48);
+    background: rgba(255, 123, 84, 0.12);
+}
+
+.weather-game-city {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-size: 1.08rem;
+    font-weight: 700;
+}
+
+.weather-game-meta {
+    display: block;
+    color: var(--storm-muted);
+    font-size: 0.88rem;
+}
+
+.weather-game-reveal {
+    min-height: 120px;
+}
+
+.weather-game-reveal .storm-card {
+    min-height: 100%;
+}
+
+.storm-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+#adminDisasterForm {
+    gap: 1.15rem;
+    margin-top: 0.35rem;
+}
+
+.compact-grid {
+    grid-template-columns: 2fr 1fr auto;
+    align-items: end;
+}
+
+.timeline-filter-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    margin-bottom: 1rem;
+}
+
+#timeline {
+    overflow: hidden;
+}
+
+#timeline #disasterList {
+    max-height: 36rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.35rem;
+    scrollbar-gutter: stable;
+}
+
+#timeline #disasterList::-webkit-scrollbar {
+    width: 0.45rem;
+}
+
+#timeline #disasterList::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(100, 210, 255, 0.35);
+}
+
+.button-row {
+    display: flex;
+    gap: 0.7rem;
+    align-items: end;
+}
+
+.grid-span-2 {
+    grid-column: span 2;
+}
+
+.search-results {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.9rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.search-pill {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--storm-border);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--storm-text);
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+    max-width: 100%;
+    line-height: 1.25;
+}
+
+.empty-state {
+    padding: 1rem;
+    border-radius: 1rem;
+    color: var(--storm-muted);
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.data-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--storm-muted);
+    font-size: 0.94rem;
+    margin-bottom: 0.35rem;
+}
+
+.data-line strong {
+    color: var(--storm-text);
+}
+
+.weather-comparison-value {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+.admin-callout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 4rem;
+    row-gap: 1rem;
+    margin-top: 1.6rem;
+    padding: 2rem 2.2rem;
+}
+
+.admin-callout > div {
+    flex: 1;
+    max-width: 44rem;
+}
+
+.admin-callout .btn {
+    justify-self: end;
+    white-space: nowrap;
+}
+
+.auth-shell {
+    display: grid;
+    place-items: center;
+    padding: 1.4rem;
+}
+
+.auth-layout {
+    width: min(1120px, 100%);
+    display: grid;
+    grid-template-columns: 1.15fr 0.9fr;
+    gap: 1.3rem;
+}
+
+.auth-showcase {
+    padding: 2.2rem 2rem;
+}
+
+.auth-showcase h1 {
+    font-size: clamp(3rem, 5vw, 4.8rem);
+    margin-bottom: 1.1rem;
+}
+
+.auth-showcase p {
+    max-width: 34rem;
+    color: var(--storm-muted);
+    font-size: 1.22rem;
+    line-height: 1.55;
+}
+
+.auth-showcase-card {
+    margin-top: 1.4rem;
+    padding: 1.2rem;
+    border-radius: 1.3rem;
+}
+
+.auth-card h2 {
+    margin-bottom: 0.7rem;
+}
+
+.auth-form {
+    margin-top: 1.1rem;
+}
+
+@media (max-width: 1199px) {
+    .hero-panel,
+    .content-grid,
+    .explorer-grid,
+    .page-link-grid,
+    .auth-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .nasa-feed-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .explorer-dashboard-panel,
+    .explorer-watchlist-panel {
+        height: auto;
+    }
+
+    .explorer-dashboard-panel #watchlistSnapshot,
+    .explorer-watchlist-panel #watchlistContainer {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+    }
+
+    .admin-user-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 991px) {
+    .stormscope-sidebar {
+        width: min(86vw, 340px);
+        max-width: 340px;
+        height: 100dvh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1040;
+        transform: translateX(calc(-100% - 1.5rem));
+        transition: transform 0.24s ease, box-shadow 0.24s ease;
+        overflow: hidden;
+        border-right: 1px solid var(--storm-border);
+        border-bottom: 0;
+        box-shadow: 18px 0 48px rgba(0, 0, 0, 0.38);
+        padding-top: max(0.85rem, env(safe-area-inset-top));
+        padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
+        overscroll-behavior: contain;
+    }
+
+    .stormscope-sidebar-main {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 0.2rem;
+    }
+
+    body.stormscope-mobile-nav-open .stormscope-sidebar {
+        transform: translateX(0);
+    }
+
+    .stormscope-sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1030;
+        border: 0;
+        padding: 0;
+        background: rgba(3, 10, 18, 0.62);
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    body.stormscope-mobile-nav-open .stormscope-sidebar-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .stormscope-mobile-nav-toggle,
+    .stormscope-sidebar-close {
+        display: inline-grid;
+    }
+
+    .stormscope-main {
+        width: 100%;
+        padding: 1rem 1rem 1.6rem;
+    }
+
+    .stormscope-topbar {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .page-title {
+        font-size: clamp(1.85rem, 6vw, 2.7rem);
+    }
+
+    .stormscope-role-badge {
+        padding: 0.48rem 0.78rem;
+        font-size: 0.68rem;
+    }
+
+    .hero-panel {
+        padding: 1.35rem;
+    }
+
+    .hero-copy h2 {
+        font-size: clamp(1.9rem, 7vw, 2.8rem);
+    }
+
+    .map-stage {
+        display: grid;
+        gap: 0.9rem;
+        padding-top: 0;
+    }
+
+    .floating-search-form {
+        position: static;
+        top: auto;
+        left: auto;
+        width: 100%;
+        transform: none;
+    }
+
+    .floating-search-inner {
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        padding: 0.75rem;
+        border-radius: 1.2rem;
+    }
+
+    .floating-search-input {
+        min-height: 3rem;
+        width: 100%;
+    }
+
+    .floating-search-button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .floating-results {
+        margin-top: 0;
+        padding: 0;
+    }
+
+    .map-hero-header,
+    .nasa-live-actions {
+        flex-wrap: wrap;
+        justify-content: start;
+    }
+
+    .hero-map {
+        min-height: 500px;
+    }
+
+    .globe-stage-shell {
+        padding-bottom: 1rem;
+    }
+
+    .weather-map {
+        min-height: 320px;
+    }
+
+    .detail-map {
+        min-height: 280px;
+    }
+
+    .globe-overlay-panel,
+    .globe-legend {
+        position: static;
+        width: 100%;
+        max-width: none;
+        margin: 1rem 1rem 0;
+    }
+
+    .button-row {
+        flex-wrap: wrap;
+    }
+
+    .button-row .btn {
+        flex: 1 1 220px;
+        justify-content: center;
+    }
+
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .compact-grid,
+    .timeline-filter-grid,
+    .storm-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-span-2 {
+        grid-column: span 1;
+    }
+
+    #timeline #disasterList {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+    }
+
+    .admin-records-panel {
+        height: auto;
+    }
+
+    .admin-records-panel #adminDisasterList {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+    }
+
+    #adminUserList {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+    }
+
+    .hero-panel,
+    .storm-panel,
+    .auth-showcase,
+    .auth-card,
+    .admin-callout {
+        padding: 1.1rem;
+    }
+
+    .stormscope-topbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .stormscope-main {
+        padding: 0.95rem 0.85rem 1.4rem;
+    }
+
+    .stormscope-topbar-main {
+        width: 100%;
+    }
+
+    .stormscope-role-badge {
+        align-self: flex-start;
+    }
+
+    .floating-search-inner {
+        display: grid;
+        gap: 0.6rem;
+        padding: 0.65rem;
+    }
+
+    .floating-search-inner > .material-symbols-outlined {
+        display: none;
+    }
+
+    .floating-search-button {
+        min-width: 110px;
+    }
+
+    .hero-map {
+        min-height: 380px;
+    }
+
+    .weather-map {
+        min-height: 280px;
+    }
+
+    .detail-map {
+        min-height: 240px;
+    }
+
+    .nasa-feed-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .globe-overlay-panel,
+    .globe-legend {
+        margin: 0.85rem 0.85rem 0;
+    }
+
+    .globe-overlay-action {
+        align-self: stretch;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .search-results {
+        justify-content: stretch;
+    }
+
+    .globe-legend span,
+    .search-pill {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .weather-game-scoreboard,
+    .weather-game-options,
+    .weather-snapshot-grid,
+    .forecast-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-header,
+    .timeline-card .panel-header,
+    .weather-card-top,
+    .forecast-card-top,
+    .weather-snapshot-header,
+    .nasa-card-top,
+    .nasa-card-footer,
+    .data-line {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .data-line strong,
+    .weather-comparison-value {
+        text-align: left;
+        justify-content: flex-start;
+        overflow-wrap: anywhere;
+    }
+
+    .metric-value {
+        font-size: clamp(1.85rem, 9vw, 2.3rem);
+    }
+
+    .hero-copy p,
+    .auth-showcase p {
+        font-size: 1rem;
+    }
+
+    .auth-shell {
+        padding: 1rem;
+    }
+
+    .auth-layout {
+        gap: 1rem;
+    }
+
+    .auth-showcase h1 {
+        font-size: clamp(2.5rem, 14vw, 3.5rem);
+    }
+}
