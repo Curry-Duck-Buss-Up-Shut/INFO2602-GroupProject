@@ -3,6 +3,9 @@ const StormScopeApp = (() => {
     const WEATHER_GAME_STORAGE_KEY = "stormscope-weather-duel-stats";
     const WEATHER_GAME_NEXT_ROUND_DELAY_MS = 7000;
     const WATCHLIST_SNAPSHOT_LIMIT = 5;
+    const WEATHER_CURRENT_CACHE_TTL_MS = 120000;
+    const WEATHER_FORECAST_CACHE_TTL_MS = 600000;
+    const WEATHER_CLIENT_CACHE_LIMIT = 150;
     const EXPLORER_PENDING_CITY_STORAGE_KEY = "stormscope-pending-explorer-city";
     const WEATHER_GAME_CITIES = [
         { name: "Port of Spain", country: "Trinidad and Tobago", latitude: 10.6603, longitude: -61.5089, timezone: "America/Port_of_Spain" },
@@ -224,6 +227,10 @@ const StormScopeApp = (() => {
             nextRoundCountdownInterval: null,
             nextRoundStartsAt: null,
         },
+    };
+    const weatherResponseCache = {
+        current: new Map(),
+        forecast: new Map(),
     };
 
     function showToast(title, message) {
@@ -939,17 +946,65 @@ const StormScopeApp = (() => {
         if (state.globe) state.globe.pointsData(buildGlobePoints());
     }
 
+    function buildWeatherCacheKey(city) {
+        const latitude = Number(city?.latitude);
+        const longitude = Number(city?.longitude);
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return "";
+        return [
+            latitude.toFixed(4),
+            longitude.toFixed(4),
+            city?.timezone || "auto",
+        ].join(":");
+    }
+
+    function readWeatherCache(cache, key, ttlMs) {
+        const cached = cache.get(key);
+        if (!cached) return null;
+        if ((Date.now() - cached.timestamp) > ttlMs) {
+            cache.delete(key);
+            return null;
+        }
+        return cached.value;
+    }
+
+    function writeWeatherCache(cache, key, value) {
+        cache.set(key, { value, timestamp: Date.now() });
+        if (cache.size <= WEATHER_CLIENT_CACHE_LIMIT) return;
+        const oldestKey = cache.keys().next().value;
+        if (oldestKey !== undefined) cache.delete(oldestKey);
+    }
+
+    function buildWeatherApiUrl(path, city) {
+        return `${path}?latitude=${city.latitude}&longitude=${city.longitude}&timezone=${encodeURIComponent(city.timezone || "auto")}`;
+    }
+
     async function searchCity(query) {
         const response = await api(`/api/weather/search?q=${encodeURIComponent(query)}`);
         return response.results || [];
     }
 
-    async function loadCurrentWeather(city) {
-        return api(`/api/weather/current?latitude=${city.latitude}&longitude=${city.longitude}&timezone=${encodeURIComponent(city.timezone || "auto")}`);
+    async function loadCurrentWeather(city, options = {}) {
+        const cacheKey = buildWeatherCacheKey(city);
+        if (cacheKey && !options.forceRefresh) {
+            const cached = readWeatherCache(weatherResponseCache.current, cacheKey, WEATHER_CURRENT_CACHE_TTL_MS);
+            if (cached) return cached;
+        }
+
+        const response = await api(buildWeatherApiUrl("/api/weather/current", city));
+        if (cacheKey) writeWeatherCache(weatherResponseCache.current, cacheKey, response);
+        return response;
     }
 
-    async function loadForecast(city) {
-        return api(`/api/weather/forecast?latitude=${city.latitude}&longitude=${city.longitude}&timezone=${encodeURIComponent(city.timezone || "auto")}`);
+    async function loadForecast(city, options = {}) {
+        const cacheKey = buildWeatherCacheKey(city);
+        if (cacheKey && !options.forceRefresh) {
+            const cached = readWeatherCache(weatherResponseCache.forecast, cacheKey, WEATHER_FORECAST_CACHE_TTL_MS);
+            if (cached) return cached;
+        }
+
+        const response = await api(buildWeatherApiUrl("/api/weather/forecast", city));
+        if (cacheKey) writeWeatherCache(weatherResponseCache.forecast, cacheKey, response);
+        return response;
     }
 
     function renderSearchResults(results) {
@@ -1059,8 +1114,9 @@ const StormScopeApp = (() => {
             const query = input.value.trim();
             const results = await searchCity(query);
             renderSearchResults(results);
-            const primaryResult = choosePrimarySearchResult(results, query);
-            if (primaryResult) selectCity(primaryResult);
+            if (results.length === 1) {
+                await selectCity(results[0]);
+            }
         } catch (error) {
             showToast("Search failed", error.message);
         }
@@ -2033,14 +2089,6 @@ const StormScopeApp = (() => {
         ) {
             try {
                 await loadNasaFeed(false);
-            } catch (error) {
-                
-            }
-        }
-
-        if (document.getElementById("weatherGameOptions")) {
-            try {
-                await startWeatherDuel();
             } catch (error) {
                 
             }
