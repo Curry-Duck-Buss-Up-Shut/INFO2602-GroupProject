@@ -31,10 +31,11 @@ def create_db_and_tables():
 
 def initialize_database():
     create_db_and_tables()
-    from app.services.seed_service import seed_defaults
+    from app.services.seed_service import seed_defaults, seed_weather_game_snapshots
 
     with Session(engine) as session:
         seed_defaults(session)
+        seed_weather_game_snapshots(session)
 
 def drop_all():
     SQLModel.metadata.drop_all(bind=engine)

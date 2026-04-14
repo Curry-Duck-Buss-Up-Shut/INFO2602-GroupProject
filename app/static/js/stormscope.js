@@ -491,7 +491,7 @@ const StormScopeApp = (() => {
         const countdownLabel = document.getElementById("weatherGameCountdownLabel");
         if (!timer && !revealTimer && !countdownCard && !countdownValue && !countdownLabel) return;
 
-        let text = "Start a duel when you want a fresh live comparison.";
+        let text = "Start a duel when you want a fresh saved comparison.";
         let active = false;
         let countdownDisplay = "--";
         let countdownMeta = "manual start";
@@ -558,24 +558,17 @@ const StormScopeApp = (() => {
     }
 
     async function buildWeatherGameRound() {
-        for (let attempt = 0; attempt < 5; attempt += 1) {
-            const cities = pickWeatherGameCities();
-            const weather = await loadCurrentWeatherBatch(cities);
-            const temperatures = weather.map((entry) => Number(entry?.temperature));
-            if (temperatures.every((value) => Number.isFinite(value))) {
-                const hotterIndex = temperatures[0] >= temperatures[1] ? 0 : 1;
-                if (Math.abs(temperatures[0] - temperatures[1]) >= 1 || attempt === 4) {
-                    return {
-                        cities,
-                        weather,
-                        hotterIndex,
-                        guessedIndex: null,
-                        resolved: false,
-                    };
-                }
-            }
+        const round = await api("/api/weather/game/round");
+        if (!Array.isArray(round?.cities) || !Array.isArray(round?.weather) || round.cities.length !== 2 || round.weather.length !== 2) {
+            throw new Error("Unable to build a saved duel round right now.");
         }
-        throw new Error("Unable to build a live duel round right now.");
+        return {
+            cities: round.cities,
+            weather: round.weather,
+            hotterIndex: Number(round.hotterIndex) === 1 ? 1 : 0,
+            guessedIndex: null,
+            resolved: false,
+        };
     }
 
     function renderWeatherGameRound() {
@@ -584,15 +577,15 @@ const StormScopeApp = (() => {
         if (!options || !reveal) return;
 
         if (state.weatherGame.loading) {
-            options.innerHTML = `<div class="empty-state grid-span-2">Loading live weather data for a new duel...</div>`;
-            reveal.innerHTML = `<div class="empty-state">Real temperatures are being fetched now.</div>`;
+            options.innerHTML = `<div class="empty-state grid-span-2">Loading two saved city snapshots for a new duel...</div>`;
+            reveal.innerHTML = `<div class="empty-state">Saved temperatures are being prepared now.</div>`;
             renderWeatherGameTimer();
             return;
         }
 
         const round = state.weatherGame.currentRound;
         if (!round) {
-            options.innerHTML = `<div class="empty-state grid-span-2">Start a duel to compare live city temperatures.</div>`;
+            options.innerHTML = `<div class="empty-state grid-span-2">Start a duel to compare saved city temperatures.</div>`;
             reveal.innerHTML = `<div class="empty-state">The result breakdown will appear here after you choose a city.</div>`;
             renderWeatherGameTimer();
             return;
@@ -616,7 +609,7 @@ const StormScopeApp = (() => {
         });
 
         if (!round.resolved) {
-            reveal.innerHTML = `<div class="empty-state">Choose the city you think is warmer right now. Temperatures stay hidden until you guess.</div>`;
+            reveal.innerHTML = `<div class="empty-state">Choose the city you think is warmer in this saved snapshot round. Temperatures stay hidden until you guess.</div>`;
             renderWeatherGameTimer();
             return;
         }
@@ -657,7 +650,7 @@ const StormScopeApp = (() => {
         clearWeatherGameCountdown();
         state.weatherGame.loading = true;
         state.weatherGame.currentRound = null;
-        setWeatherGamePrompt("Loading two live cities for the next duel...");
+        setWeatherGamePrompt("Loading two saved cities for the next duel...");
         renderWeatherGameTimer();
         renderWeatherGameRound();
 

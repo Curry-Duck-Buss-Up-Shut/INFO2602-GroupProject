@@ -6,11 +6,13 @@ from app.repositories.disaster_event import DisasterEventRepository
 from app.repositories.saved_location import SavedLocationRepository
 from app.repositories.user import UserRepository
 from app.repositories.weather_forecast_snapshot import WeatherForecastSnapshotRepository
+from app.repositories.weather_game_snapshot import WeatherGameSnapshotRepository
 from app.schemas.disaster import DisasterEventCreate, DisasterEventResponse, DisasterEventUpdate, DisasterImportResponse
 from app.schemas.weather import WeatherCurrentBatchRequest
 from app.schemas.user import UserAdminUpdate, UserDeleteRequest, UserResponse, UserSelfUpdate
 from app.schemas.watchlist import SavedLocationCreate, SavedLocationResponse, SavedLocationUpdate
 from app.services.disaster_service import DisasterService
+from app.services.weather_game_service import WeatherGameService
 from app.services.user_service import UserAuthorizationError, UserConflictError, UserService, UserValidationError
 from app.services.watchlist_service import WatchlistService
 from app.services.weather_service import UpstreamRateLimitError, WeatherService
@@ -182,6 +184,20 @@ async def weather_forecast(
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Forecast lookup failed right now. Please try again shortly.",
+        )
+
+
+@api_router.get("/weather/game/round")
+async def weather_game_round(db: SessionDep):
+    service = WeatherGameService(WeatherGameSnapshotRepository(db))
+    try:
+        return service.build_round()
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="The mini game deck is unavailable right now. Please try again shortly.",
         )
 
 
