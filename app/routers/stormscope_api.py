@@ -5,6 +5,7 @@ from app.dependencies import AdminDep, AuthDep, SessionDep
 from app.repositories.disaster_event import DisasterEventRepository
 from app.repositories.saved_location import SavedLocationRepository
 from app.repositories.user import UserRepository
+from app.repositories.weather_forecast_snapshot import WeatherForecastSnapshotRepository
 from app.schemas.disaster import DisasterEventCreate, DisasterEventResponse, DisasterEventUpdate, DisasterImportResponse
 from app.schemas.user import UserAdminUpdate, UserDeleteRequest, UserResponse, UserSelfUpdate
 from app.schemas.watchlist import SavedLocationCreate, SavedLocationResponse, SavedLocationUpdate
@@ -143,9 +144,10 @@ async def weather_current(
 async def weather_forecast(
     latitude: float,
     longitude: float,
+    db: SessionDep,
     timezone: str = "auto",
 ):
-    service = WeatherService()
+    service = WeatherService(forecast_repo=WeatherForecastSnapshotRepository(db))
     try:
         return await service.get_forecast(latitude=latitude, longitude=longitude, timezone=timezone)
     except UpstreamRateLimitError as exc:

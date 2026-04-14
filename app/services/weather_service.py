@@ -1,12 +1,15 @@
 import asyncio
+import json
 import time
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone as dt_timezone
 from threading import Lock
 from typing import Any, Awaitable, Callable, Optional
 
 import httpx
 
 from app.config import get_settings
+from app.repositories.weather_forecast_snapshot import WeatherForecastSnapshotRepository
 
 
 WEATHER_CODE_LABELS = {
@@ -66,6 +69,9 @@ _cache_lock = Lock()
 
 
 class WeatherService:
+    def __init__(self, forecast_repo: WeatherForecastSnapshotRepository | None = None):
+        self.forecast_repo = forecast_repo
+
     async def search_city(self, query: str, count: int = 6) -> list[dict[str, Any]]:
         normalized_query = query.strip()
         if not normalized_query:
@@ -97,7 +103,12 @@ class WeatherService:
         ]
 
     async def get_current_weather(self, latitude: float, longitude: float, timezone: str = "auto") -> dict[str, Any]:
-        data = await self._fetch_weather(latitude, longitude, timezone)
+        try:
+            data = await self._fetch_live_current_weather(latitude, longitude, timezone)
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 429:
+                raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
+            raise
         current = data.get("current", {})
         return {
             "latitude": data.get("latitude"),
@@ -116,8 +127,57 @@ class WeatherService:
         }
 
     async def get_forecast(self, latitude: float, longitude: float, timezone: str = "auto") -> dict[str, Any]:
-        data = await self._fetch_weather(latitude, longitude, timezone)
+        normalized_latitude = round(latitude, 4)
+        normalized_longitude = round(longitude, 4)
+        normalized_timezone = timezone or "auto"
+        settings = get_settings()
+        snapshot = None
+        forecast_days: list[dict[str, Any]] | None = None
+
+        if self.forecast_repo:
+            snapshot = self.forecast_repo.get_snapshot(normalized_latitude, normalized_longitude, normalized_timezone)
+            if snapshot:
+                forecast_days = self._deserialize_forecast_days(snapshot.forecast_json)
+                if forecast_days and not self._is_forecast_snapshot_stale(
+                    snapshot.fetched_at,
+                    settings.weather_forecast_snapshot_ttl_seconds,
+                ):
+                    return {"forecast": forecast_days}
+
+        try:
+            data = await self._fetch_live_forecast(normalized_latitude, normalized_longitude, normalized_timezone)
+        except httpx.HTTPStatusError as exc:
+            if forecast_days and snapshot and self._is_forecast_snapshot_servable(
+                snapshot.fetched_at,
+                settings.weather_forecast_snapshot_stale_ttl_seconds,
+            ):
+                return {"forecast": forecast_days}
+            if exc.response.status_code == 429:
+                raise UpstreamRateLimitError(self._parse_retry_after_seconds(exc.response)) from exc
+            raise
+        except Exception:
+            if forecast_days and snapshot and self._is_forecast_snapshot_servable(
+                snapshot.fetched_at,
+                settings.weather_forecast_snapshot_stale_ttl_seconds,
+            ):
+                return {"forecast": forecast_days}
+            raise
+
         daily = data.get("daily", {})
+        forecast_days = self._build_forecast_days(daily)
+
+        if self.forecast_repo and forecast_days:
+            self.forecast_repo.upsert_snapshot(
+                latitude=normalized_latitude,
+                longitude=normalized_longitude,
+                timezone_name=normalized_timezone,
+                forecast_json=json.dumps(forecast_days),
+                fetched_at=datetime.now(dt_timezone.utc),
+            )
+
+        return {"forecast": forecast_days}
+
+    def _build_forecast_days(self, daily: dict[str, Any]) -> list[dict[str, Any]]:
         dates = daily.get("time", [])
         codes = daily.get("weather_code", [])
         highs = daily.get("temperature_2m_max", [])
@@ -136,7 +196,7 @@ class WeatherService:
                     "precipitation_probability": precipitation[index] if index < len(precipitation) else None,
                 }
             )
-        return {"forecast": forecast_days}
+        return forecast_days
 
     async def get_live_eonet_events(
         self,
@@ -193,44 +253,62 @@ class WeatherService:
             and settings.caribbean_lon_min <= longitude <= settings.caribbean_lon_max
         )
 
-    async def _fetch_weather(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
+    async def _fetch_live_current_weather(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
         settings = get_settings()
         normalized_timezone = timezone or "auto"
-        return await self._get_or_fetch_json(
-            cache_key=(
-                f"weather:{round(latitude, 4)}:{round(longitude, 4)}:{normalized_timezone.lower()}"
-            ),
-            ttl_seconds=settings.weather_cache_ttl_seconds,
-            stale_ttl_seconds=settings.weather_stale_ttl_seconds,
-            fetcher=lambda: self._request_json(
-                settings.open_meteo_forecast_url,
-                params={
-                    "latitude": latitude,
-                    "longitude": longitude,
-                    "timezone": normalized_timezone,
-                    "current": ",".join(
-                        [
-                            "temperature_2m",
-                            "relative_humidity_2m",
-                            "apparent_temperature",
-                            "is_day",
-                            "precipitation",
-                            "weather_code",
-                            "wind_speed_10m",
-                        ]
-                    ),
-                    "daily": ",".join(
-                        [
-                            "weather_code",
-                            "temperature_2m_max",
-                            "temperature_2m_min",
-                            "precipitation_probability_max",
-                        ]
-                    ),
-                    "forecast_days": 7,
-                },
-            ),
+        return await self._request_json(
+            settings.open_meteo_forecast_url,
+            params={
+                "latitude": latitude,
+                "longitude": longitude,
+                "timezone": normalized_timezone,
+                "current": ",".join(
+                    [
+                        "temperature_2m",
+                        "relative_humidity_2m",
+                        "apparent_temperature",
+                        "is_day",
+                        "precipitation",
+                        "weather_code",
+                        "wind_speed_10m",
+                    ]
+                ),
+            },
         )
+
+    async def _fetch_live_forecast(self, latitude: float, longitude: float, timezone: Optional[str]) -> dict[str, Any]:
+        settings = get_settings()
+        normalized_timezone = timezone or "auto"
+        return await self._request_json(
+            settings.open_meteo_forecast_url,
+            params={
+                "latitude": latitude,
+                "longitude": longitude,
+                "timezone": normalized_timezone,
+                "daily": ",".join(
+                    [
+                        "weather_code",
+                        "temperature_2m_max",
+                        "temperature_2m_min",
+                        "precipitation_probability_max",
+                    ]
+                ),
+                "forecast_days": 7,
+            },
+        )
+
+    def _deserialize_forecast_days(self, forecast_json: str) -> list[dict[str, Any]]:
+        try:
+            payload = json.loads(forecast_json)
+        except (TypeError, ValueError):
+            return []
+        return payload if isinstance(payload, list) else []
+
+    def _is_forecast_snapshot_stale(self, fetched_at: datetime, ttl_seconds: int) -> bool:
+        return datetime.now(dt_timezone.utc) - fetched_at > timedelta(seconds=ttl_seconds)
+
+    def _is_forecast_snapshot_servable(self, fetched_at: datetime, stale_ttl_seconds: int) -> bool:
+        return datetime.now(dt_timezone.utc) - fetched_at <= timedelta(seconds=stale_ttl_seconds)
 
     async def _request_json(self, url: str, params: dict[str, Any]) -> dict[str, Any]:
         async with httpx.AsyncClient(timeout=20.0) as client:
