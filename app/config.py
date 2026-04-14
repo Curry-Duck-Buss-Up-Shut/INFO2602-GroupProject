@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     weather_cache_ttl_seconds: int = 60
     weather_stale_ttl_seconds: int = 1800
     weather_search_cache_ttl_seconds: int = 1800
+    weather_upstream_min_interval_ms: int = 300
     weather_current_snapshot_ttl_seconds: int = 3600
     weather_current_snapshot_stale_ttl_seconds: int = 86400
     weather_forecast_snapshot_ttl_seconds: int = 10800

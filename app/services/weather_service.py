@@ -67,6 +67,8 @@ class UpstreamRateLimitError(RuntimeError):
 _response_cache: dict[str, CacheEntry] = {}
 _inflight_requests: dict[str, asyncio.Task] = {}
 _cache_lock = Lock()
+_upstream_request_lock = asyncio.Lock()
+_next_upstream_request_at = 0.0
 
 
 class WeatherService:
@@ -534,10 +536,24 @@ class WeatherService:
         return datetime.now(dt_timezone.utc) - self._coerce_utc_datetime(fetched_at) <= timedelta(seconds=stale_ttl_seconds)
 
     async def _request_json(self, url: str, params: dict[str, Any]) -> dict[str, Any]:
+        await self._wait_for_upstream_slot()
         async with httpx.AsyncClient(timeout=20.0) as client:
             response = await client.get(url, params=params)
             response.raise_for_status()
         return response.json()
+
+    async def _wait_for_upstream_slot(self) -> None:
+        interval_seconds = max(get_settings().weather_upstream_min_interval_ms, 0) / 1000
+        if interval_seconds <= 0:
+            return
+
+        global _next_upstream_request_at
+        async with _upstream_request_lock:
+            now = time.monotonic()
+            wait_seconds = _next_upstream_request_at - now
+            if wait_seconds > 0:
+                await asyncio.sleep(wait_seconds)
+            _next_upstream_request_at = time.monotonic() + interval_seconds
 
     async def _get_or_fetch_json(
         self,

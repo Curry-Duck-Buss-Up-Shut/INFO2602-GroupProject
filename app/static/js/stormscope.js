@@ -5,7 +5,7 @@ const StormScopeApp = (() => {
     const WEATHER_CURRENT_CACHE_TTL_MS = 120000;
     const WEATHER_FORECAST_CACHE_TTL_MS = 600000;
     const WEATHER_CLIENT_CACHE_LIMIT = 150;
-    const WEATHER_LOOKUP_SPACING_MS = 800;
+    const WEATHER_LOOKUP_SPACING_MS = 300;
     const EXPLORER_PENDING_CITY_STORAGE_KEY = "stormscope-pending-explorer-city";
     const WEATHER_GAME_CITIES = [
         { name: "Port of Spain", country: "Trinidad and Tobago", latitude: 10.6603, longitude: -61.5089, timezone: "America/Port_of_Spain" },
@@ -1253,9 +1253,6 @@ const StormScopeApp = (() => {
             const interactionAttrs = canOpenWeatherDetails
                 ? ` class="storm-card watchlist-snapshot-card" data-snapshot-index="${index}" role="button" tabindex="0"`
                 : ` class="storm-card"`;
-            const actionLabel = hasInlineWeatherDetails
-                ? "Open to load live weather"
-                : "Open in explorer to load weather";
 
             return `
                 <article${interactionAttrs}>
@@ -1268,8 +1265,6 @@ const StormScopeApp = (() => {
                         ${renderWeatherIcon(null, true, "weather-icon-badge weather-icon-badge-compact")}
                     </div>
                     <div class="metric-value">Saved</div>
-                    ${renderDataLine("Status", "Dashboard weather refresh is paused to protect live lookups.", "fa-solid fa-shield-halved")}
-                    ${renderDataLine("Action", actionLabel, "fa-solid fa-location-arrow")}
                 </article>
             `;
         });
@@ -1298,7 +1293,7 @@ const StormScopeApp = (() => {
 
         const snapshotNote = `<div class="empty-state">${hiddenCityCount
             ? `Showing your top ${cities.length} saved cities.`
-            : "Saved locations are ready."} Open a city to load live current weather and the 7-day forecast on demand.</div>`;
+            : "Saved locations are ready."}</div>`;
         container.innerHTML = `${weatherCards.join("")}${snapshotNote}`;
 
         if (canOpenWeatherDetails) {
