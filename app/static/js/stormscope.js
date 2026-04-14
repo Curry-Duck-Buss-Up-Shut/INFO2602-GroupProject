@@ -5,6 +5,7 @@ const StormScopeApp = (() => {
     const WEATHER_CURRENT_CACHE_TTL_MS = 120000;
     const WEATHER_FORECAST_CACHE_TTL_MS = 600000;
     const WEATHER_CLIENT_CACHE_LIMIT = 150;
+    const WEATHER_LOOKUP_SPACING_MS = 800;
     const EXPLORER_PENDING_CITY_STORAGE_KEY = "stormscope-pending-explorer-city";
     const WEATHER_GAME_CITIES = [
         { name: "Port of Spain", country: "Trinidad and Tobago", latitude: 10.6603, longitude: -61.5089, timezone: "America/Port_of_Spain" },
@@ -228,6 +229,7 @@ const StormScopeApp = (() => {
         current: new Map(),
         forecast: new Map(),
     };
+    let weatherLookupQueue = Promise.resolve();
 
     function showToast(title, message) {
         const toastElement = document.getElementById("appToast");
@@ -924,6 +926,25 @@ const StormScopeApp = (() => {
         return `${path}?latitude=${city.latitude}&longitude=${city.longitude}&timezone=${encodeURIComponent(city.timezone || "auto")}`;
     }
 
+    function delay(ms) {
+        return new Promise((resolve) => {
+            window.setTimeout(resolve, ms);
+        });
+    }
+
+    function enqueueWeatherLookup(task) {
+        const run = async () => {
+            try {
+                return await task();
+            } finally {
+                await delay(WEATHER_LOOKUP_SPACING_MS);
+            }
+        };
+        const scheduled = weatherLookupQueue.then(run, run);
+        weatherLookupQueue = scheduled.catch(() => undefined).then(() => undefined);
+        return scheduled;
+    }
+
     async function searchCity(query) {
         const response = await api(`/api/weather/search?q=${encodeURIComponent(query)}`);
         return response.results || [];
@@ -936,7 +957,7 @@ const StormScopeApp = (() => {
             if (cached) return cached;
         }
 
-        const response = await api(buildWeatherApiUrl("/api/weather/current", city));
+        const response = await enqueueWeatherLookup(() => api(buildWeatherApiUrl("/api/weather/current", city)));
         if (cacheKey) writeWeatherCache(weatherResponseCache.current, cacheKey, response);
         return response;
     }
@@ -989,7 +1010,7 @@ const StormScopeApp = (() => {
             if (cached) return cached;
         }
 
-        const response = await api(buildWeatherApiUrl("/api/weather/forecast", city));
+        const response = await enqueueWeatherLookup(() => api(buildWeatherApiUrl("/api/weather/forecast", city)));
         if (cacheKey) writeWeatherCache(weatherResponseCache.forecast, cacheKey, response);
         return response;
     }

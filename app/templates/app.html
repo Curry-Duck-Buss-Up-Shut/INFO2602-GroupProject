@@ -18,63 +18,39 @@
 <section class="hero-panel" id="dashboard">
     <div class="hero-copy">
         <div class="eyebrow">Dashboard</div>
-        <h2>Your world, tracked through StormScope</h2>
+        <h2>Dashboard overview is paused for live weather protection</h2>
         <p>
-            Explore live weather, keep important cities close, and follow major disaster records from one home base built for fast awareness.
+            The home dashboard is staying lightweight right now so the live current-weather lookups and 7-day forecast requests can be reserved for locations you actively open.
         </p>
         <div class="hero-actions">
             <a class="btn btn-storm-primary" href="/app/explorer">Open explorer</a>
             <a class="btn btn-storm-secondary" href="/app/timeline">Open timeline</a>
-            <a class="btn btn-storm-secondary" href="/app/game">Play mini game</a>
+            <a class="btn btn-storm-secondary" href="/app/profile">Open profile</a>
         </div>
     </div>
     <div class="hero-metrics">
         <article class="metric-card">
-            <div class="metric-label">Tracked cities</div>
-            <div class="metric-value" id="metricWatchlistCount">0</div>
-            <small>Personal watchlist entries</small>
+            <div class="metric-label">Dashboard mode</div>
+            <div class="metric-value">Paused</div>
+            <small>Static home overview</small>
         </article>
         <article class="metric-card">
-            <div class="metric-label">StormScope records</div>
-            <div class="metric-value" id="metricDisasterCount">0</div>
-            <small>Disaster records powered by EONET NASA Live Feed</small>
+            <div class="metric-label">Live weather</div>
+            <div class="metric-value">Explorer</div>
+            <small>Loaded only when you open a place</small>
         </article>
     </div>
 </section>
 
-<section class="map-hero-shell" id="explorer">
-    <div class="map-hero-header">
+<section class="storm-panel">
+    <div class="panel-header">
         <div>
-            <div class="eyebrow">Map search</div>
-            <h3>Search countries or cities, then let the globe take over the page.</h3>
+            <div class="eyebrow">Paused overview</div>
+            <h3>Use the explorer for live current weather and the 7-day forecast</h3>
         </div>
     </div>
-
-    <div class="map-stage">
-        <form id="weatherSearchForm" class="floating-search-form">
-            <label class="visually-hidden" for="citySearch">Search countries or cities</label>
-            <div class="floating-search-inner">
-                <span class="material-symbols-outlined">search</span>
-                <input class="form-control storm-input floating-search-input" id="citySearch" name="citySearch" placeholder="Search countries or cities..." required>
-                <button class="btn btn-storm-primary floating-search-button" type="submit">Search</button>
-            </div>
-        </form>
-        <div id="searchResults" class="search-results floating-results"></div>
-        <div class="globe-stage-shell hero-map">
-            <div id="weatherGlobe" class="weather-globe"></div>
-            <div class="globe-overlay-panel">
-                <div class="eyebrow">Live Earth</div>
-                <h4 id="globeFocusTitle">StormScope live globe</h4>
-                <p id="globeFocusCopy">Move between your selected place, personal watchlist, and active event markers without leaving the map.</p>
-                <div id="globeFocusMeta" class="globe-focus-meta">Saved places and live events wrapped around the globe.</div>
-                <a class="btn btn-storm-secondary globe-overlay-action" href="/app/explorer#detailMap">Open Detailed Map</a>
-            </div>
-            <div class="globe-legend">
-                <span><i class="legend-dot legend-dot-city"></i> Selected place</span>
-                <span><i class="legend-dot legend-dot-watchlist"></i> Saved locations</span>
-                <span><i class="legend-dot legend-dot-nasa"></i> NASA live events</span>
-            </div>
-        </div>
+    <div class="empty-state">
+        The dashboard page is intentionally static right now. Open the explorer and choose a location to load live weather only when you need it.
     </div>
 </section>
 
@@ -88,15 +64,6 @@
         <p>Search places, open detailed conditions, and move from map view to forecast without losing your bearings.</p>
         <span class="feature-link-action">Go to explorer</span>
     </a>
-    <a class="storm-panel feature-link-card" href="/app/game">
-        <div class="feature-link-top">
-            <span class="material-symbols-outlined feature-link-icon">stadia_controller</span>
-            <div class="eyebrow">Mini Game</div>
-        </div>
-        <h3>Turn live weather into a fast challenge</h3>
-        <p>Jump into quick rounds, compare cities, and see how often your weather instincts beat the forecast.</p>
-        <span class="feature-link-action">Go to mini game</span>
-    </a>
     <a class="storm-panel feature-link-card" href="/app/timeline">
         <div class="feature-link-top">
             <span class="material-symbols-outlined feature-link-icon">warning</span>
@@ -106,17 +73,26 @@
         <p>Browse StormScope's disaster records powered by EONET NASA Live Feed, filter what matters, and see how major activity has been tracked across the system.</p>
         <span class="feature-link-action">Go to timeline</span>
     </a>
+    <a class="storm-panel feature-link-card" href="/app/profile">
+        <div class="feature-link-top">
+            <span class="material-symbols-outlined feature-link-icon">manage_accounts</span>
+            <div class="eyebrow">Profile</div>
+        </div>
+        <h3>Manage your account and session settings</h3>
+        <p>Update your profile details, refresh your credentials, and keep your StormScope account in good shape.</p>
+        <span class="feature-link-action">Go to profile</span>
+    </a>
 </section>
 
 <section class="storm-panel">
     <div class="panel-header">
         <div>
             <div class="eyebrow">Watchlist</div>
-            <h3>Today in your tracked cities</h3>
+            <h3>Saved locations are still available in the explorer</h3>
         </div>
     </div>
-    <div id="watchlistSnapshot" class="weather-snapshot-grid">
-        <div class="empty-state">Save cities from the explorer to populate your weather dashboard.</div>
+    <div class="empty-state">
+        Open the explorer to manage your watchlist and load weather for a saved location on demand.
     </div>
 </section>
 
